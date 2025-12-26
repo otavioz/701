@@ -1,0 +1,22 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+selenium = "*"
+beautifulsoup4 = "*"
+pyzbar = "*"
+requests = "*"
+xmltodict = "*"
+bs4 = "*"
+python-dotenv = "*"
+telegram = "*"
+python-telegram-bot = "*"
+opencv-python = "*"
+pytz = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.10"
