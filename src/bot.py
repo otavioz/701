@@ -1,6 +1,7 @@
 """
 Main Telegram bot for receipt processing
 """
+from functools import wraps
 import os
 import tempfile
 import logging
@@ -14,6 +15,7 @@ from telegram.ext import (
     Application, CommandHandler, MessageHandler, 
     CallbackQueryHandler, ContextTypes, filters, Defaults
 )
+from src.config import get_permitted_users, set_permitted_user
 from handler.receipt import ReceiptBot
 
 #https://core.telegram.org/bots/api#formatting-options
@@ -53,6 +55,7 @@ class AP701Bot:
             CommandHandler("lproducts", self._safe_handler(self.download_products)),
             CommandHandler("sumup", self._safe_handler(self.products_sumup)),
             CommandHandler("bills", self._safe_handler(self.monthly_bills)),
+            CommandHandler("add", self._safe_handler(self.add_user)),
             MessageHandler(filters.PHOTO, self._safe_handler(self.handle_photo)),
             #MessageHandler(filters.Document.IMAGE, self._safe_handler(self.handle_document_image)),
             CallbackQueryHandler(
@@ -77,11 +80,26 @@ class AP701Bot:
         
         return wrapped_handler
     
+    def restricted(func):
+        @wraps(func)
+        async def wrapped(self, update: Update, context: ContextTypes, *args, **kwargs):
+            user_id = update.effective_user.id
+            permitted_users = get_permitted_users()
+            if user_id not in permitted_users:
+                #print("Unauthorized access denied for {}.".format(user_id))
+                self.logger.warning("Unauthorized access denied for {}.".format(user_id))
+                await update.message.reply_text("Usuário não autorizado!", parse_mode='Markdown')
+                return
+            await func(self, update, context, *args, **kwargs)
+            return
+        return wrapped
+
     async def echo(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         welcome_text = f"Não entendi! Digite /help para ver uma lista de funcionalidades do bot."
 
         await update.message.reply_text(welcome_text, parse_mode='Markdown')
 
+    @restricted
     async def start_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         """Handle /start command"""
        
@@ -108,10 +126,11 @@ class AP701Bot:
         """
         await update.message.reply_text(welcome_text, parse_mode='Markdown')
 
-    async def error_handler(self,update: object, context: ContextTypes.DEFAULT_TYPE) -> None:
+    @restricted
+    async def error_handler(self, update: object, context: ContextTypes.DEFAULT_TYPE) -> None:
         """Log the error and send a telegram message to notify the developer."""
         # Log the error before we do anything else, so we can see it even if something breaks.
-        logging.error("Exception while handling an update:", exc_info=context.error)
+        self.logger.error("Exception while handling an update:", exc_info=context.error)
 
         tb_list = traceback.format_exception(None, context.error, context.error.__traceback__)
         #message = (f"Warning: \n{html.escape(tb_list[-1]).split(':')[-1]}")
@@ -124,14 +143,17 @@ class AP701Bot:
             )
         #await context.bot.send_message(chat_id=chat_id, text=message, parse_mode=ParseMode.HTML)
 
+    @restricted
     async def products_sumup(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         await self.receipt.products_sumup(update)
 
+    @restricted
     async def monthly_bills(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         text = f"🚧 Ainda em Construção 🚧"
 
         await update.message.reply_text(text, parse_mode='Markdown')
 
+    @restricted
     async def handle_photo(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         """Handle photo messages containing QR codes"""
         user_id = update.message.from_user.id
@@ -154,12 +176,28 @@ class AP701Bot:
             if 'temp_path' in locals() and os.path.exists(temp_path):
                 os.unlink(temp_path)
 
+    @restricted
     async def read_qrcode(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text("Para começar é só enviar uma foto da nota fiscal com o QR  visível.")
 
+    @restricted
     async def download_products(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         await self.receipt.get_product_data(update)
 
+    @restricted
+    async def add_user(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
+        user_id = update.message.text.replace('/add','').strip()
+        try:
+            user_id = float(user_id)
+            if not user_id:
+                await update.message.reply_text("Para adicionar um usuário envie o texto _/add userid_", parse_mode='Markdown')
+                return
+            set_permitted_user(user_id)
+            await update.message.reply_text("Usuário {} adicionado a lista de usuários permitidos!".format(user_id))
+        except ValueError:
+            await update.message.reply_text("Certifique-se se enviar o ID do usuário!\n _{}_ Não é um ID válido.".format(user_id))
+
+    @restricted
     async def handle_button_click(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         """Handle inline keyboard button clicks"""
         query = update.callback_query
@@ -169,6 +207,7 @@ class AP701Bot:
         data = query.data
         await self.receipt.select_items(update, user_id, data)
     
+    @restricted
     async def help_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         """Handle /help command"""
         help_text = """

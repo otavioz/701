@@ -1,10 +1,13 @@
 """
 Configuration management for Receipt Bot
 """
+import json
 import os
 from typing import Dict, Any
 from pathlib import Path
 import pytz
+
+from consts import USER_DATA
 
 def load_config() -> Dict[str, Any]:
     """
@@ -73,3 +76,22 @@ def get_supported_timezones() -> Dict[str, str]:
         'AU': 'Australia/Sydney',       # Australia
         'IN': 'Asia/Kolkata',           # India
     }
+
+def get_permitted_users() -> list[int]:
+    with open(USER_DATA, "r") as json_file:
+        data_read = json.load(json_file)
+    return data_read['permitted']
+
+def set_permitted_user(user_id):
+    # 1. Read the existing data
+    with open(USER_DATA, 'r') as f:
+        # Use json.load() to convert JSON data into a Python list
+        data_list = json.load(f)
+
+    # 2. Append the new data to the Python list
+    data_list['permitted'].append(user_id)
+
+    # 3. Write the entire updated list back to the file
+    with open(USER_DATA, 'w') as f:
+        # Use json.dump() to write the updated list as JSON
+        json.dump(data_list, f, indent=2) # Using indent for readability
