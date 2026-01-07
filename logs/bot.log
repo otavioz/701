@@ -5932,3 +5932,518 @@ AttributeError: 'NoneType' object has no attribute '__traceback__'
 2025-12-25 17:21:17,648 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
 2025-12-25 17:21:27,856 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
 2025-12-25 17:21:38,064 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
+2026-01-06 23:09:56,114 - __main__ - INFO - 🤖 Starting Receipt Bot...
+2026-01-06 23:09:56,115 - src.bot - INFO - Starting bot...
+2026-01-06 23:09:56,769 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getMe "HTTP/1.1 200 OK"
+2026-01-06 23:09:56,969 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/deleteWebhook "HTTP/1.1 200 OK"
+2026-01-06 23:09:56,971 - telegram.ext.Application - INFO - Application started
+2026-01-06 23:10:04,583 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
+2026-01-06 23:10:05,368 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/sendMessage "HTTP/1.1 200 OK"
+2026-01-06 23:10:07,746 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
+2026-01-06 23:10:07,752 - src.bot - INFO - User zotavioz (1051315576) - Action
+2026-01-06 23:10:07,754 - src.bot - WARNING - Unauthorized access denied for 1051315576.
+2026-01-06 23:10:07,806 - src.bot - ERROR - Handler error: object NoneType can't be used in 'await' expression
+2026-01-06 23:10:07,806 - src.bot - WARNING - Unauthorized access denied for 1051315576.
+2026-01-06 23:10:07,808 - src.bot - WARNING - Unauthorized access denied for 1051315576.
+2026-01-06 23:10:07,809 - telegram.ext.Application - ERROR - An error was raised and an uncaught error was raised while handling the error with an error_handler.
+Traceback (most recent call last):
+  File "C:\Users\otavi\OneDrive\Documentos\GIT\701\src\bot.py", line 74, in wrapped_handler
+    return await handler_func(update, context)
+TypeError: object NoneType can't be used in 'await' expression
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\otavi\.virtualenvs\701-eBRsCayT\lib\site-packages\telegram\ext\_application.py", line 1315, in process_update
+    await coroutine
+  File "C:\Users\otavi\.virtualenvs\701-eBRsCayT\lib\site-packages\telegram\ext\_handlers\basehandler.py", line 159, in handle_update
+    return await self.callback(update, context)
+  File "C:\Users\otavi\OneDrive\Documentos\GIT\701\src\bot.py", line 77, in wrapped_handler
+    await self.error_handler(update, context)
+TypeError: object NoneType can't be used in 'await' expression
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\otavi\.virtualenvs\701-eBRsCayT\lib\site-packages\telegram\ext\_application.py", line 1929, in process_error
+    await callback(update, context)
+TypeError: object NoneType can't be used in 'await' expression
+2026-01-06 23:10:18,032 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
+2026-01-06 23:10:28,246 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
+2026-01-06 23:10:45,007 - __main__ - INFO - 🤖 Starting Receipt Bot...
+2026-01-06 23:10:45,011 - src.bot - INFO - Starting bot...
+2026-01-06 23:10:45,642 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getMe "HTTP/1.1 200 OK"
+2026-01-06 23:10:45,841 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/deleteWebhook "HTTP/1.1 200 OK"
+2026-01-06 23:10:45,846 - telegram.ext.Application - INFO - Application started
+2026-01-06 23:10:51,295 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
+2026-01-06 23:10:51,297 - src.bot - INFO - User zotavioz (1051315576) - Action
+2026-01-06 23:10:51,299 - src.bot - WARNING - Unauthorized access denied for 1051315576.
+2026-01-06 23:10:52,086 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/sendMessage "HTTP/1.1 200 OK"
+2026-01-06 23:11:01,513 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
+2026-01-06 23:11:11,722 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
+2026-01-06 23:11:21,927 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
+2026-01-06 23:11:28,687 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
+2026-01-06 23:11:28,698 - src.bot - INFO - User zotavioz (1051315576) - Action
+2026-01-06 23:11:28,703 - src.bot - WARNING - Unauthorized access denied for 1051315576.
+2026-01-06 23:11:29,532 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/sendMessage "HTTP/1.1 200 OK"
+2026-01-06 23:11:38,915 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
+2026-01-06 23:11:48,025 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
+2026-01-06 23:11:48,026 - telegram.ext.Application - INFO - Application is stopping. This might take a moment.
+2026-01-06 23:11:48,028 - telegram.ext.Application - INFO - Application.stop() complete
+2026-01-06 23:11:53,953 - __main__ - INFO - 🤖 Starting Receipt Bot...
+2026-01-06 23:11:53,954 - src.bot - INFO - Starting bot...
+2026-01-06 23:11:54,599 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getMe "HTTP/1.1 200 OK"
+2026-01-06 23:11:54,805 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/deleteWebhook "HTTP/1.1 200 OK"
+2026-01-06 23:11:54,808 - telegram.ext.Application - INFO - Application started
+2026-01-06 23:12:05,414 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
+2026-01-06 23:12:05,614 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
+2026-01-06 23:12:05,616 - src.bot - INFO - User zotavioz (1051315576) - Action
+2026-01-06 23:12:05,616 - src.bot - WARNING - Unauthorized access denied for 1051315576.
+2026-01-06 23:12:06,376 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/sendMessage "HTTP/1.1 200 OK"
+2026-01-06 23:12:15,817 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
+2026-01-06 23:12:26,026 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
+2026-01-06 23:12:36,271 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
+2026-01-06 23:12:46,476 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
+2026-01-06 23:12:56,687 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
+2026-01-06 23:13:06,887 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
+2026-01-06 23:13:18,707 - __main__ - INFO - 🤖 Starting Receipt Bot...
+2026-01-06 23:13:18,709 - src.bot - INFO - Starting bot...
+2026-01-06 23:13:19,339 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getMe "HTTP/1.1 200 OK"
+2026-01-06 23:13:19,547 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/deleteWebhook "HTTP/1.1 200 OK"
+2026-01-06 23:13:19,549 - telegram.ext.Application - INFO - Application started
+2026-01-06 23:13:30,162 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
+2026-01-06 23:13:30,967 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
+2026-01-06 23:13:30,971 - src.bot - INFO - User zotavioz (1051315576) - Action
+2026-01-06 23:13:41,226 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
+2026-01-06 23:13:51,458 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
+2026-01-06 23:14:01,662 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
+2026-01-06 23:14:11,866 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
+2026-01-06 23:14:16,463 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
+2026-01-06 23:14:16,465 - telegram.ext.Application - INFO - Application is stopping. This might take a moment.
+2026-01-06 23:14:16,465 - telegram.ext.Application - INFO - Application.stop() complete
+2026-01-06 23:14:22,926 - __main__ - INFO - 🤖 Starting Receipt Bot...
+2026-01-06 23:14:22,928 - src.bot - INFO - Starting bot...
+2026-01-06 23:14:23,573 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getMe "HTTP/1.1 200 OK"
+2026-01-06 23:14:23,783 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/deleteWebhook "HTTP/1.1 200 OK"
+2026-01-06 23:14:23,788 - telegram.ext.Application - INFO - Application started
+2026-01-06 23:14:26,928 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
+2026-01-06 23:14:26,931 - src.bot - INFO - User zotavioz (1051315576) - Action
+2026-01-06 23:14:27,276 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/sendMessage "HTTP/1.1 200 OK"
+2026-01-06 23:14:37,154 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
+2026-01-06 23:14:47,411 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
+2026-01-06 23:14:57,661 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
+2026-01-06 23:15:08,044 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
+2026-01-06 23:15:18,258 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
+2026-01-06 23:15:28,477 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
+2026-01-06 23:15:38,719 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
+2026-01-06 23:15:48,939 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
+2026-01-06 23:15:59,209 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
+2026-01-06 23:16:09,454 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
+2026-01-06 23:16:19,680 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
+2026-01-06 23:16:29,892 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
+2026-01-06 23:16:40,138 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
+2026-01-06 23:16:50,371 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
+2026-01-06 23:17:00,611 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
+2026-01-06 23:17:10,821 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
+2026-01-06 23:17:21,031 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
+2026-01-06 23:17:31,251 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
+2026-01-06 23:17:41,470 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
+2026-01-06 23:17:51,696 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
+2026-01-06 23:17:59,043 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
+2026-01-06 23:17:59,048 - src.bot - INFO - User zotavioz (1051315576) - Action
+2026-01-06 23:17:59,804 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/sendMessage "HTTP/1.1 200 OK"
+2026-01-06 23:18:08,269 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
+2026-01-06 23:18:08,274 - src.bot - INFO - User zotavioz (1051315576) - Action
+2026-01-06 23:18:09,021 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/sendMessage "HTTP/1.1 200 OK"
+2026-01-06 23:18:18,495 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
+2026-01-06 23:18:28,717 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
+2026-01-06 23:18:38,966 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
+2026-01-06 23:18:49,194 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
+2026-01-06 23:18:59,528 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
+2026-01-06 23:19:09,791 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
+2026-01-06 23:19:20,015 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
+2026-01-06 23:19:30,277 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
+2026-01-06 23:19:40,501 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
+2026-01-06 23:19:50,724 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
+2026-01-06 23:20:01,001 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
+2026-01-06 23:20:11,215 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
+2026-01-06 23:20:21,541 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
+2026-01-06 23:20:31,763 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
+2026-01-06 23:20:41,978 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
+2026-01-06 23:20:52,217 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
+2026-01-06 23:57:42,490 - __main__ - INFO - 🤖 Starting Receipt Bot...
+2026-01-06 23:57:42,491 - src.bot - INFO - Starting bot...
+2026-01-06 23:57:43,160 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getMe "HTTP/1.1 200 OK"
+2026-01-06 23:57:43,368 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/deleteWebhook "HTTP/1.1 200 OK"
+2026-01-06 23:57:43,372 - telegram.ext.Application - INFO - Application started
+2026-01-06 23:57:51,331 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
+2026-01-06 23:57:51,336 - src.bot - INFO - User zotavioz (1051315576) - Action
+2026-01-06 23:57:52,126 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/sendMessage "HTTP/1.1 200 OK"
+2026-01-06 23:58:01,587 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
+2026-01-06 23:58:11,794 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
+2026-01-06 23:58:22,001 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
+2026-01-06 23:58:32,202 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
+2026-01-06 23:58:42,411 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
+2026-01-06 23:58:52,612 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
+2026-01-06 23:59:02,824 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
+2026-01-06 23:59:13,029 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
+2026-01-06 23:59:23,232 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
+2026-01-06 23:59:24,290 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
+2026-01-06 23:59:24,292 - src.bot - INFO - User zotavioz (1051315576) - Action
+2026-01-06 23:59:25,054 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/sendMessage "HTTP/1.1 200 OK"
+2026-01-06 23:59:34,516 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
+2026-01-06 23:59:44,726 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
+2026-01-06 23:59:54,936 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
+2026-01-07 00:00:05,144 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
+2026-01-07 00:00:15,349 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
+2026-01-07 00:00:25,557 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
+2026-01-07 00:00:35,764 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
+2026-01-07 00:00:45,974 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
+2026-01-07 00:00:56,183 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
+2026-01-07 00:01:06,386 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
+2026-01-07 00:01:17,627 - __main__ - INFO - 🤖 Starting Receipt Bot...
+2026-01-07 00:01:17,628 - src.bot - INFO - Starting bot...
+2026-01-07 00:01:18,258 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getMe "HTTP/1.1 200 OK"
+2026-01-07 00:01:18,459 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/deleteWebhook "HTTP/1.1 200 OK"
+2026-01-07 00:01:18,461 - telegram.ext.Application - INFO - Application started
+2026-01-07 00:01:21,958 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
+2026-01-07 00:01:21,961 - src.bot - INFO - User zotavioz (1051315576) - Action
+2026-01-07 00:01:22,168 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/sendMessage "HTTP/1.1 400 Bad Request"
+2026-01-07 00:01:22,169 - src.bot - ERROR - Handler error: Can't parse entities: unsupported start tag "id" at byte offset 47
+2026-01-07 00:01:22,170 - src.bot - ERROR - Exception while handling an update:
+2026-01-07 00:01:22,171 - src.bot - ERROR - Exception while handling an update:
+Traceback (most recent call last):
+  File "C:\Users\otavi\OneDrive\Documentos\GIT\701\src\bot.py", line 76, in wrapped_handler
+    return await handler_func(update, context)
+  File "C:\Users\otavi\OneDrive\Documentos\GIT\701\src\bot.py", line 93, in wrapped
+    await func(self, update, context, *args, **kwargs)
+  File "C:\Users\otavi\OneDrive\Documentos\GIT\701\src\bot.py", line 194, in add_user
+    await update.message.reply_text("Para adicionar um usuário envie o texto `/add <id>`")
+  File "C:\Users\otavi\.virtualenvs\701-eBRsCayT\lib\site-packages\telegram\_message.py", line 2060, in reply_text
+    return await self.get_bot().send_message(
+  File "C:\Users\otavi\.virtualenvs\701-eBRsCayT\lib\site-packages\telegram\ext\_extbot.py", line 3107, in send_message
+    return await super().send_message(
+  File "C:\Users\otavi\.virtualenvs\701-eBRsCayT\lib\site-packages\telegram\_bot.py", line 1118, in send_message
+    return await self._send_message(
+  File "C:\Users\otavi\.virtualenvs\701-eBRsCayT\lib\site-packages\telegram\ext\_extbot.py", line 634, in _send_message
+    result = await super()._send_message(
+  File "C:\Users\otavi\.virtualenvs\701-eBRsCayT\lib\site-packages\telegram\_bot.py", line 819, in _send_message
+    result = await self._post(
+  File "C:\Users\otavi\.virtualenvs\701-eBRsCayT\lib\site-packages\telegram\_bot.py", line 703, in _post
+    return await self._do_post(
+  File "C:\Users\otavi\.virtualenvs\701-eBRsCayT\lib\site-packages\telegram\ext\_extbot.py", line 372, in _do_post
+    return await super()._do_post(
+  File "C:\Users\otavi\.virtualenvs\701-eBRsCayT\lib\site-packages\telegram\_bot.py", line 732, in _do_post
+    result = await request.post(
+  File "C:\Users\otavi\.virtualenvs\701-eBRsCayT\lib\site-packages\telegram\request\_baserequest.py", line 198, in post
+    result = await self._request_wrapper(
+  File "C:\Users\otavi\.virtualenvs\701-eBRsCayT\lib\site-packages\telegram\request\_baserequest.py", line 375, in _request_wrapper
+    raise exception
+telegram.error.BadRequest: Can't parse entities: unsupported start tag "id" at byte offset 47
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\otavi\.virtualenvs\701-eBRsCayT\lib\site-packages\telegram\ext\_application.py", line 1315, in process_update
+    await coroutine
+  File "C:\Users\otavi\.virtualenvs\701-eBRsCayT\lib\site-packages\telegram\ext\_handlers\basehandler.py", line 159, in handle_update
+    return await self.callback(update, context)
+  File "C:\Users\otavi\OneDrive\Documentos\GIT\701\src\bot.py", line 79, in wrapped_handler
+    await self.error_handler(update, context)
+  File "C:\Users\otavi\OneDrive\Documentos\GIT\701\src\bot.py", line 93, in wrapped
+    await func(self, update, context, *args, **kwargs)
+  File "C:\Users\otavi\OneDrive\Documentos\GIT\701\src\bot.py", line 135, in error_handler
+    tb_list = traceback.format_exception(None, context.error, context.error.__traceback__)
+AttributeError: 'NoneType' object has no attribute '__traceback__'
+2026-01-07 00:01:22,573 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/sendMessage "HTTP/1.1 200 OK"
+2026-01-07 00:01:32,170 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
+2026-01-07 00:01:42,373 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
+2026-01-07 00:01:44,065 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
+2026-01-07 00:01:44,068 - src.bot - INFO - User zotavioz (1051315576) - Action
+2026-01-07 00:01:44,681 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/sendMessage "HTTP/1.1 400 Bad Request"
+2026-01-07 00:01:44,683 - src.bot - ERROR - Handler error: Can't parse entities: unsupported start tag "id" at byte offset 47
+2026-01-07 00:01:44,685 - src.bot - ERROR - Exception while handling an update:
+2026-01-07 00:01:44,686 - src.bot - ERROR - Exception while handling an update:
+Traceback (most recent call last):
+  File "C:\Users\otavi\OneDrive\Documentos\GIT\701\src\bot.py", line 76, in wrapped_handler
+    return await handler_func(update, context)
+  File "C:\Users\otavi\OneDrive\Documentos\GIT\701\src\bot.py", line 93, in wrapped
+    await func(self, update, context, *args, **kwargs)
+  File "C:\Users\otavi\OneDrive\Documentos\GIT\701\src\bot.py", line 194, in add_user
+    await update.message.reply_text("Para adicionar um usuário envie o texto `/add <id>`")
+  File "C:\Users\otavi\.virtualenvs\701-eBRsCayT\lib\site-packages\telegram\_message.py", line 2060, in reply_text
+    return await self.get_bot().send_message(
+  File "C:\Users\otavi\.virtualenvs\701-eBRsCayT\lib\site-packages\telegram\ext\_extbot.py", line 3107, in send_message
+    return await super().send_message(
+  File "C:\Users\otavi\.virtualenvs\701-eBRsCayT\lib\site-packages\telegram\_bot.py", line 1118, in send_message
+    return await self._send_message(
+  File "C:\Users\otavi\.virtualenvs\701-eBRsCayT\lib\site-packages\telegram\ext\_extbot.py", line 634, in _send_message
+    result = await super()._send_message(
+  File "C:\Users\otavi\.virtualenvs\701-eBRsCayT\lib\site-packages\telegram\_bot.py", line 819, in _send_message
+    result = await self._post(
+  File "C:\Users\otavi\.virtualenvs\701-eBRsCayT\lib\site-packages\telegram\_bot.py", line 703, in _post
+    return await self._do_post(
+  File "C:\Users\otavi\.virtualenvs\701-eBRsCayT\lib\site-packages\telegram\ext\_extbot.py", line 372, in _do_post
+    return await super()._do_post(
+  File "C:\Users\otavi\.virtualenvs\701-eBRsCayT\lib\site-packages\telegram\_bot.py", line 732, in _do_post
+    result = await request.post(
+  File "C:\Users\otavi\.virtualenvs\701-eBRsCayT\lib\site-packages\telegram\request\_baserequest.py", line 198, in post
+    result = await self._request_wrapper(
+  File "C:\Users\otavi\.virtualenvs\701-eBRsCayT\lib\site-packages\telegram\request\_baserequest.py", line 375, in _request_wrapper
+    raise exception
+telegram.error.BadRequest: Can't parse entities: unsupported start tag "id" at byte offset 47
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\otavi\.virtualenvs\701-eBRsCayT\lib\site-packages\telegram\ext\_application.py", line 1315, in process_update
+    await coroutine
+  File "C:\Users\otavi\.virtualenvs\701-eBRsCayT\lib\site-packages\telegram\ext\_handlers\basehandler.py", line 159, in handle_update
+    return await self.callback(update, context)
+  File "C:\Users\otavi\OneDrive\Documentos\GIT\701\src\bot.py", line 79, in wrapped_handler
+    await self.error_handler(update, context)
+  File "C:\Users\otavi\OneDrive\Documentos\GIT\701\src\bot.py", line 93, in wrapped
+    await func(self, update, context, *args, **kwargs)
+  File "C:\Users\otavi\OneDrive\Documentos\GIT\701\src\bot.py", line 135, in error_handler
+    tb_list = traceback.format_exception(None, context.error, context.error.__traceback__)
+AttributeError: 'NoneType' object has no attribute '__traceback__'
+2026-01-07 00:01:45,046 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/sendMessage "HTTP/1.1 200 OK"
+2026-01-07 00:01:54,274 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
+2026-01-07 00:02:04,477 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
+2026-01-07 00:02:14,678 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
+2026-01-07 00:02:24,885 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
+2026-01-07 00:02:35,098 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
+2026-01-07 00:02:45,300 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
+2026-01-07 00:03:04,523 - __main__ - INFO - 🤖 Starting Receipt Bot...
+2026-01-07 00:03:04,530 - src.bot - INFO - Starting bot...
+2026-01-07 00:03:05,163 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getMe "HTTP/1.1 200 OK"
+2026-01-07 00:03:05,399 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/deleteWebhook "HTTP/1.1 200 OK"
+2026-01-07 00:03:05,402 - telegram.ext.Application - INFO - Application started
+2026-01-07 00:03:07,719 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
+2026-01-07 00:03:07,719 - src.bot - INFO - User zotavioz (1051315576) - Action
+2026-01-07 00:03:07,938 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/sendMessage "HTTP/1.1 400 Bad Request"
+2026-01-07 00:03:07,940 - src.bot - ERROR - Handler error: Can't parse entities: unsupported start tag "id" at byte offset 48
+2026-01-07 00:03:07,941 - src.bot - ERROR - Exception while handling an update:
+2026-01-07 00:03:07,942 - src.bot - ERROR - Exception while handling an update:
+Traceback (most recent call last):
+  File "C:\Users\otavi\OneDrive\Documentos\GIT\701\src\bot.py", line 76, in wrapped_handler
+    return await handler_func(update, context)
+  File "C:\Users\otavi\OneDrive\Documentos\GIT\701\src\bot.py", line 93, in wrapped
+    await func(self, update, context, *args, **kwargs)
+  File "C:\Users\otavi\OneDrive\Documentos\GIT\701\src\bot.py", line 194, in add_user
+    await update.message.reply_text("Para adicionar um usuário envie o texto `/add \<id>`")
+  File "C:\Users\otavi\.virtualenvs\701-eBRsCayT\lib\site-packages\telegram\_message.py", line 2060, in reply_text
+    return await self.get_bot().send_message(
+  File "C:\Users\otavi\.virtualenvs\701-eBRsCayT\lib\site-packages\telegram\ext\_extbot.py", line 3107, in send_message
+    return await super().send_message(
+  File "C:\Users\otavi\.virtualenvs\701-eBRsCayT\lib\site-packages\telegram\_bot.py", line 1118, in send_message
+    return await self._send_message(
+  File "C:\Users\otavi\.virtualenvs\701-eBRsCayT\lib\site-packages\telegram\ext\_extbot.py", line 634, in _send_message
+    result = await super()._send_message(
+  File "C:\Users\otavi\.virtualenvs\701-eBRsCayT\lib\site-packages\telegram\_bot.py", line 819, in _send_message
+    result = await self._post(
+  File "C:\Users\otavi\.virtualenvs\701-eBRsCayT\lib\site-packages\telegram\_bot.py", line 703, in _post
+    return await self._do_post(
+  File "C:\Users\otavi\.virtualenvs\701-eBRsCayT\lib\site-packages\telegram\ext\_extbot.py", line 372, in _do_post
+    return await super()._do_post(
+  File "C:\Users\otavi\.virtualenvs\701-eBRsCayT\lib\site-packages\telegram\_bot.py", line 732, in _do_post
+    result = await request.post(
+  File "C:\Users\otavi\.virtualenvs\701-eBRsCayT\lib\site-packages\telegram\request\_baserequest.py", line 198, in post
+    result = await self._request_wrapper(
+  File "C:\Users\otavi\.virtualenvs\701-eBRsCayT\lib\site-packages\telegram\request\_baserequest.py", line 375, in _request_wrapper
+    raise exception
+telegram.error.BadRequest: Can't parse entities: unsupported start tag "id" at byte offset 48
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\otavi\.virtualenvs\701-eBRsCayT\lib\site-packages\telegram\ext\_application.py", line 1315, in process_update
+    await coroutine
+  File "C:\Users\otavi\.virtualenvs\701-eBRsCayT\lib\site-packages\telegram\ext\_handlers\basehandler.py", line 159, in handle_update
+    return await self.callback(update, context)
+  File "C:\Users\otavi\OneDrive\Documentos\GIT\701\src\bot.py", line 79, in wrapped_handler
+    await self.error_handler(update, context)
+  File "C:\Users\otavi\OneDrive\Documentos\GIT\701\src\bot.py", line 93, in wrapped
+    await func(self, update, context, *args, **kwargs)
+  File "C:\Users\otavi\OneDrive\Documentos\GIT\701\src\bot.py", line 135, in error_handler
+    tb_list = traceback.format_exception(None, context.error, context.error.__traceback__)
+AttributeError: 'NoneType' object has no attribute '__traceback__'
+2026-01-07 00:03:08,313 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/sendMessage "HTTP/1.1 200 OK"
+2026-01-07 00:03:21,495 - __main__ - INFO - 🤖 Starting Receipt Bot...
+2026-01-07 00:03:21,496 - src.bot - INFO - Starting bot...
+2026-01-07 00:03:22,130 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getMe "HTTP/1.1 200 OK"
+2026-01-07 00:03:22,334 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/deleteWebhook "HTTP/1.1 200 OK"
+2026-01-07 00:03:22,342 - telegram.ext.Application - INFO - Application started
+2026-01-07 00:03:41,394 - __main__ - INFO - 🤖 Starting Receipt Bot...
+2026-01-07 00:03:41,396 - src.bot - INFO - Starting bot...
+2026-01-07 00:03:42,053 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getMe "HTTP/1.1 200 OK"
+2026-01-07 00:03:42,283 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/deleteWebhook "HTTP/1.1 200 OK"
+2026-01-07 00:03:42,290 - telegram.ext.Application - INFO - Application started
+2026-01-07 00:03:52,920 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
+2026-01-07 00:03:54,848 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
+2026-01-07 00:03:54,848 - src.bot - INFO - User zotavioz (1051315576) - Action
+2026-01-07 00:03:55,472 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/sendMessage "HTTP/1.1 400 Bad Request"
+2026-01-07 00:03:55,475 - src.bot - ERROR - Handler error: Can't parse entities: unsupported start tag "user_id" at byte offset 48
+2026-01-07 00:03:55,477 - src.bot - ERROR - Exception while handling an update:
+2026-01-07 00:03:55,479 - src.bot - ERROR - Exception while handling an update:
+Traceback (most recent call last):
+  File "C:\Users\otavi\OneDrive\Documentos\GIT\701\src\bot.py", line 76, in wrapped_handler
+    return await handler_func(update, context)
+  File "C:\Users\otavi\OneDrive\Documentos\GIT\701\src\bot.py", line 93, in wrapped
+    await func(self, update, context, *args, **kwargs)
+  File "C:\Users\otavi\OneDrive\Documentos\GIT\701\src\bot.py", line 194, in add_user
+    await update.message.reply_text("Para adicionar um usuário envie o texto `/add \<user_id>\`")
+  File "C:\Users\otavi\.virtualenvs\701-eBRsCayT\lib\site-packages\telegram\_message.py", line 2060, in reply_text
+    return await self.get_bot().send_message(
+  File "C:\Users\otavi\.virtualenvs\701-eBRsCayT\lib\site-packages\telegram\ext\_extbot.py", line 3107, in send_message
+    return await super().send_message(
+  File "C:\Users\otavi\.virtualenvs\701-eBRsCayT\lib\site-packages\telegram\_bot.py", line 1118, in send_message
+    return await self._send_message(
+  File "C:\Users\otavi\.virtualenvs\701-eBRsCayT\lib\site-packages\telegram\ext\_extbot.py", line 634, in _send_message
+    result = await super()._send_message(
+  File "C:\Users\otavi\.virtualenvs\701-eBRsCayT\lib\site-packages\telegram\_bot.py", line 819, in _send_message
+    result = await self._post(
+  File "C:\Users\otavi\.virtualenvs\701-eBRsCayT\lib\site-packages\telegram\_bot.py", line 703, in _post
+    return await self._do_post(
+  File "C:\Users\otavi\.virtualenvs\701-eBRsCayT\lib\site-packages\telegram\ext\_extbot.py", line 372, in _do_post
+    return await super()._do_post(
+  File "C:\Users\otavi\.virtualenvs\701-eBRsCayT\lib\site-packages\telegram\_bot.py", line 732, in _do_post
+    result = await request.post(
+  File "C:\Users\otavi\.virtualenvs\701-eBRsCayT\lib\site-packages\telegram\request\_baserequest.py", line 198, in post
+    result = await self._request_wrapper(
+  File "C:\Users\otavi\.virtualenvs\701-eBRsCayT\lib\site-packages\telegram\request\_baserequest.py", line 375, in _request_wrapper
+    raise exception
+telegram.error.BadRequest: Can't parse entities: unsupported start tag "user_id" at byte offset 48
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\otavi\.virtualenvs\701-eBRsCayT\lib\site-packages\telegram\ext\_application.py", line 1315, in process_update
+    await coroutine
+  File "C:\Users\otavi\.virtualenvs\701-eBRsCayT\lib\site-packages\telegram\ext\_handlers\basehandler.py", line 159, in handle_update
+    return await self.callback(update, context)
+  File "C:\Users\otavi\OneDrive\Documentos\GIT\701\src\bot.py", line 79, in wrapped_handler
+    await self.error_handler(update, context)
+  File "C:\Users\otavi\OneDrive\Documentos\GIT\701\src\bot.py", line 93, in wrapped
+    await func(self, update, context, *args, **kwargs)
+  File "C:\Users\otavi\OneDrive\Documentos\GIT\701\src\bot.py", line 135, in error_handler
+    tb_list = traceback.format_exception(None, context.error, context.error.__traceback__)
+AttributeError: 'NoneType' object has no attribute '__traceback__'
+2026-01-07 00:03:55,863 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/sendMessage "HTTP/1.1 200 OK"
+2026-01-07 00:04:05,088 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
+2026-01-07 00:05:03,178 - __main__ - INFO - 🤖 Starting Receipt Bot...
+2026-01-07 00:05:03,179 - src.bot - INFO - Starting bot...
+2026-01-07 00:05:03,834 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getMe "HTTP/1.1 200 OK"
+2026-01-07 00:05:04,048 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/deleteWebhook "HTTP/1.1 200 OK"
+2026-01-07 00:05:04,054 - telegram.ext.Application - INFO - Application started
+2026-01-07 00:05:06,977 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
+2026-01-07 00:05:06,984 - src.bot - INFO - User zotavioz (1051315576) - Action
+2026-01-07 00:05:07,350 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/sendMessage "HTTP/1.1 200 OK"
+2026-01-07 00:05:17,205 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
+2026-01-07 00:05:27,417 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
+2026-01-07 00:05:37,646 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
+2026-01-07 00:05:47,918 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
+2026-01-07 00:05:58,122 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
+2026-01-07 00:06:08,360 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
+2026-01-07 00:06:12,671 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
+2026-01-07 00:06:12,675 - telegram.ext.Application - INFO - Application is stopping. This might take a moment.
+2026-01-07 00:06:12,676 - telegram.ext.Application - INFO - Application.stop() complete
+2026-01-07 00:06:16,867 - __main__ - INFO - 🤖 Starting Receipt Bot...
+2026-01-07 00:06:16,868 - src.bot - INFO - Starting bot...
+2026-01-07 00:06:17,514 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getMe "HTTP/1.1 200 OK"
+2026-01-07 00:06:17,719 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/deleteWebhook "HTTP/1.1 200 OK"
+2026-01-07 00:06:17,726 - telegram.ext.Application - INFO - Application started
+2026-01-07 00:06:21,039 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
+2026-01-07 00:06:21,042 - src.bot - INFO - User zotavioz (1051315576) - Action
+2026-01-07 00:06:21,383 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/sendMessage "HTTP/1.1 200 OK"
+2026-01-07 00:06:31,254 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
+2026-01-07 00:06:41,469 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
+2026-01-07 00:06:51,693 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
+2026-01-07 00:07:02,329 - __main__ - INFO - 🤖 Starting Receipt Bot...
+2026-01-07 00:07:02,331 - src.bot - INFO - Starting bot...
+2026-01-07 00:07:02,967 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getMe "HTTP/1.1 200 OK"
+2026-01-07 00:07:03,180 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/deleteWebhook "HTTP/1.1 200 OK"
+2026-01-07 00:07:03,184 - telegram.ext.Application - INFO - Application started
+2026-01-07 00:07:05,779 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
+2026-01-07 00:07:05,785 - src.bot - INFO - User zotavioz (1051315576) - Action
+2026-01-07 00:07:06,134 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/sendMessage "HTTP/1.1 200 OK"
+2026-01-07 00:07:16,001 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
+2026-01-07 00:07:26,204 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
+2026-01-07 00:07:31,627 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
+2026-01-07 00:07:31,633 - src.bot - INFO - User zotavioz (1051315576) - Action
+2026-01-07 00:07:32,410 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/sendMessage "HTTP/1.1 200 OK"
+2026-01-07 00:07:41,853 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
+2026-01-07 00:07:52,063 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
+2026-01-07 00:08:02,267 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
+2026-01-07 00:08:12,468 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
+2026-01-07 00:08:22,672 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
+2026-01-07 00:08:32,873 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
+2026-01-07 00:08:43,075 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
+2026-01-07 00:08:53,279 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
+2026-01-07 00:09:03,484 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
+2026-01-07 00:09:13,687 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
+2026-01-07 00:09:23,893 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
+2026-01-07 00:09:34,097 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
+2026-01-07 00:09:44,307 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
+2026-01-07 00:09:54,513 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
+2026-01-07 00:10:07,298 - __main__ - INFO - 🤖 Starting Receipt Bot...
+2026-01-07 00:10:07,299 - src.bot - INFO - Starting bot...
+2026-01-07 00:10:07,937 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getMe "HTTP/1.1 200 OK"
+2026-01-07 00:10:08,145 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/deleteWebhook "HTTP/1.1 200 OK"
+2026-01-07 00:10:08,151 - telegram.ext.Application - INFO - Application started
+2026-01-07 00:10:18,772 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
+2026-01-07 00:10:19,229 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
+2026-01-07 00:10:19,231 - src.bot - INFO - User zotavioz (1051315576) - Action
+2026-01-07 00:10:19,232 - src.bot - ERROR - Handler error: local variable 'user_id' referenced before assignment
+2026-01-07 00:10:19,232 - src.bot - ERROR - Exception while handling an update:
+2026-01-07 00:10:19,233 - src.bot - ERROR - Exception while handling an update:
+Traceback (most recent call last):
+  File "C:\Users\otavi\OneDrive\Documentos\GIT\701\src\bot.py", line 190, in add_user
+    user_id = float(update.message.text.replace('/add','').strip())
+ValueError: could not convert string to float: 'kkkk'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\otavi\OneDrive\Documentos\GIT\701\src\bot.py", line 76, in wrapped_handler
+    return await handler_func(update, context)
+  File "C:\Users\otavi\OneDrive\Documentos\GIT\701\src\bot.py", line 93, in wrapped
+    await func(self, update, context, *args, **kwargs)
+  File "C:\Users\otavi\OneDrive\Documentos\GIT\701\src\bot.py", line 197, in add_user
+    await update.message.reply_text("Certifique-se se enviar o ID do usuário!\n {} Não é um ID válido.".format(user_id))
+UnboundLocalError: local variable 'user_id' referenced before assignment
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\otavi\.virtualenvs\701-eBRsCayT\lib\site-packages\telegram\ext\_application.py", line 1315, in process_update
+    await coroutine
+  File "C:\Users\otavi\.virtualenvs\701-eBRsCayT\lib\site-packages\telegram\ext\_handlers\basehandler.py", line 159, in handle_update
+    return await self.callback(update, context)
+  File "C:\Users\otavi\OneDrive\Documentos\GIT\701\src\bot.py", line 79, in wrapped_handler
+    await self.error_handler(update, context)
+  File "C:\Users\otavi\OneDrive\Documentos\GIT\701\src\bot.py", line 93, in wrapped
+    await func(self, update, context, *args, **kwargs)
+  File "C:\Users\otavi\OneDrive\Documentos\GIT\701\src\bot.py", line 135, in error_handler
+    tb_list = traceback.format_exception(None, context.error, context.error.__traceback__)
+AttributeError: 'NoneType' object has no attribute '__traceback__'
+2026-01-07 00:10:19,995 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/sendMessage "HTTP/1.1 200 OK"
+2026-01-07 00:10:29,450 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
+2026-01-07 00:10:39,655 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
+2026-01-07 00:10:49,865 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
+2026-01-07 00:11:00,074 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
+2026-01-07 00:11:12,815 - __main__ - INFO - 🤖 Starting Receipt Bot...
+2026-01-07 00:11:12,819 - src.bot - INFO - Starting bot...
+2026-01-07 00:11:13,506 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getMe "HTTP/1.1 200 OK"
+2026-01-07 00:11:13,722 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/deleteWebhook "HTTP/1.1 200 OK"
+2026-01-07 00:11:13,727 - telegram.ext.Application - INFO - Application started
+2026-01-07 00:11:22,976 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
+2026-01-07 00:11:22,978 - src.bot - INFO - User zotavioz (1051315576) - Action
+2026-01-07 00:11:23,741 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/sendMessage "HTTP/1.1 200 OK"
+2026-01-07 00:11:33,183 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
+2026-01-07 00:11:43,406 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
+2026-01-07 00:11:53,659 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
+2026-01-07 00:12:03,875 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
+2026-01-07 00:12:14,191 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
+2026-01-07 00:12:24,399 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
+2026-01-07 00:12:34,608 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8476521610:AAFKJ_XrFUB5-reI1OjwvQ4vAPimyVMai3I/getUpdates "HTTP/1.1 200 OK"
