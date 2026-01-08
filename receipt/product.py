@@ -1,13 +1,16 @@
 
+import json
+import logging
+import os
 import re
 from datetime import datetime
 import re
 from bs4 import BeautifulSoup as BS
 from collections import deque
 
-from consts import UNDEFINED
+from consts import BKP_PRODUCT_DIR, PRODUCT_DIR, UNDEFINED, USERS_DIR
 
-PRODUCT_DIR = 'data/products.csv'
+PRODUCTS_FILEHEADER = 'product_name;code;quantity;unity;price;date;shop;owner;datetime'
 
 class Product():
     def __init__(self,product_name, quantity, unity, price, owner, shop, code=None, date=None, formatted=False):
@@ -77,9 +80,16 @@ class Product():
             return value
     
     def _set_owner(self,owner):
+        if self.formatted:
+            return owner
+        users = get_users()
+        for key,value in users.items():
+            if owner in value:
+                owner = key
+                break
         if owner == '':
             return UNDEFINED
-        return owner.replace('null','').strip()
+        return owner.strip()
     
     def _set_date(self,date):
         if type(date) == str:
@@ -87,6 +97,14 @@ class Product():
         elif type(date) == datetime:
             return date
         return datetime.now()
+    
+@staticmethod
+def get_users():
+    with open(USERS_DIR, 'r') as f:
+        # Use json.load() to convert JSON data into a Python list
+        data_list = json.load(f)
+    return data_list
+
 @staticmethod
 def save_products(product_list:list[Product]):
     now = datetime.now()
@@ -113,6 +131,22 @@ def load_products() -> list[Product]:
                                     owner = p[7],
                                     formatted=True))
     return items
+
+@staticmethod
+def backup_file():
+    source_file = PRODUCT_DIR
+    destination_file = BKP_PRODUCT_DIR
+    try:
+        os.replace(source_file, destination_file)
+        logging.info(f"File '{source_file}' renamed to '{destination_file}' (overwritten if existed).")
+        with open(source_file, 'w') as file:
+            file.write(PRODUCTS_FILEHEADER)
+            file.write('\n')
+    except FileNotFoundError:
+        #print(f"Error: Source file '{source_file}' not found.")
+        os.rename(source_file,destination_file)
+    except OSError:
+        raise OSError("Erro ao tentar limpar arquivo!")
 
 class FixedSizeArray:
     def __init__(self, max_size):

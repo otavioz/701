@@ -54,10 +54,7 @@ def main():
         )
         
         logger.info("🤖 Starting Receipt Bot...")
-        print("=" * 50)
         print("Receipt Bot Started!")
-        print(f"Timezone: {config.get('timezone', 'America/Sao_Paulo')}")
-        print("Send /start to your bot to begin")
         print("=" * 50)
         
         # Run the bot

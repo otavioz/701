@@ -6,7 +6,7 @@ from typing import List, Dict, Any
 # Third-party imports
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 
-from consts import UNDEFINED
+from consts import PRODUCT_DIR, UNDEFINED
 import receipt.product as Pdt
 from receipt.qrcode import QRCodeProcessor
 from receipt.webscrapping import WebScraper
@@ -61,7 +61,7 @@ class ReceiptBot:
         query = update.callback_query
 
         if user_id not in self.user_sessions: # self.user_sessions is not global
-            await query.edit_message_text("Session expired. Please send a new QR code.")
+            await query.edit_message_text("Sessão expirada, inicie novamente.")
             return
         
         items = self.user_sessions[user_id]['items']
@@ -84,16 +84,34 @@ class ReceiptBot:
             # Save selected items
             await self.save_selected_items(update, user_id, items)
         
-        elif data == "cancel":
+        elif data == "cancel_":
             # Cancel operation
             if user_id in self.user_sessions:
                 del self.user_sessions[user_id]
             await query.edit_message_text("Operação cancelada.")
+
+
+    
+    async def clean_file(self, update: Update, user_id: int, data):
+        query = update.callback_query
+
+        #if user_id not in self.user_sessions: # self.user_sessions is not global
+        #    return await query.edit_message_text("Sessão expirada, inicie novamente.")
+
+        if data == "clean_file":
+            # Cancel operation
+            Pdt.backup_file()
+            await query.edit_message_caption("Arquivo limpo.")
+        elif data == "keep_":
+            # Cancel operation
+            if user_id in self.user_sessions:
+                del self.user_sessions[user_id]
+            await query.edit_message_caption("Feito!")
         
     async def send_item_selection(self, update: Update, user_id: int, items: List[Dict]):
         """Send interactive message for item selection"""
         if not items:
-            await update.message.reply_text("No items found to display.")
+            await update.message.reply_text("Nenhum item foi selecionado!.")
             return
         
         # Create keyboard with items
@@ -151,26 +169,24 @@ class ReceiptBot:
                 return
             
             # Create TXT content
-            txt_content = "🛒 *Items salvos*: \n"           
+            txt_content = "🛒 *Items salvos*:\n"           
             total = 0
             for i, item in enumerate(selected_items, 1):
-                txt_content += f"{i}. {item.product_name}\n"
-                txt_content += f"Qtd.: {item.quantity} {item.unity} "
-                txt_content += f"Preço: R$ {item.price}\n\n"
+                txt_content += f"  {i}. {item.product_name}\n"
+                txt_content += f"  Qtd.: {item.quantity} {item.unity} "
+                txt_content += f"  Preço: R$ {item.price}\n"
 
                 if item.owner == UNDEFINED:
                     item.owner = user
                 
                 # Try to extract numeric price for total
                 try:
-                    price_clean = item.price.replace('R$', '').replace(',', '.').strip()
-                    price_num = float(price_clean)
-                    total += price_num
+                    total += item.price
                 except:
                     pass
             
             if total > 0:
-                txt_content += f"Total: R$ {total:.2f}\n"
+                txt_content += f"\nTotal: R$ {total:.2f}"
             
             # Save items on csv
             Pdt.save_products(selected_items)
@@ -195,7 +211,7 @@ class ReceiptBot:
             if user_id in self.user_sessions:
                 del self.user_sessions[user_id]
             
-            await update.callback_query.edit_message_text(txt_content)
+            await update.callback_query.edit_message_text(txt_content, parse_mode='Markdown')
             
         except Exception as e:
             logger.error(f"Error saving items: {e}")
@@ -205,23 +221,26 @@ class ReceiptBot:
 
     async def get_product_data(self, update: Update):
         #Send file to user
+        reply_markup = InlineKeyboardMarkup([[
+            InlineKeyboardButton("🧹 Limpar Arquivo", callback_data="clean_file"),
+            InlineKeyboardButton("📝 Manter", callback_data="keep_")
+        ]])
+ 
         try:
-            with open(Pdt.PRODUCT_DIR, 'rb') as file:
+            with open(PRODUCT_DIR, 'rb') as file:
                 await update.message.reply_document(
                     document=file,
+                    reply_markup=reply_markup,
                     filename="compras.csv",
-                    caption=f"Aqui está o .csv!"
+                    caption=f"Aqui está o arquivo! Gostaria de limpá-lo?"
                 )
         except Exception as e:
             logger.error(f"Error sending file: {e}")
             await update.message.reply_text(
                 "❌ Ocorreu um erro ao enviar o arquivo."
             )
-    
+        
     async def products_sumup(self, update: Update):
-        """
-            25/07:{Otavio:12,Enzo:45}
-        """
         try:
             items = {}
             messsage = '🛒 *Resumo das Últimas Compras*\n'

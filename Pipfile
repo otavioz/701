@@ -11,10 +11,10 @@ requests = "*"
 xmltodict = "*"
 bs4 = "*"
 python-dotenv = "*"
-telegram = "*"
 python-telegram-bot = "*"
 opencv-python = "*"
 pytz = "*"
+telegram = "*"
 
 [dev-packages]
 
