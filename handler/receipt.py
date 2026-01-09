@@ -169,12 +169,12 @@ class ReceiptBot:
                 return
             
             # Create TXT content
-            txt_content = "🛒 *Items salvos*:\n"           
+            txt_content = "🛒 *Items salvos*:\n\n"           
             total = 0
             for i, item in enumerate(selected_items, 1):
                 txt_content += f"  {i}. {item.product_name}\n"
-                txt_content += f"  Qtd.: {item.quantity} {item.unity} "
-                txt_content += f"  Preço: R$ {item.price}\n"
+                txt_content += f"  Qtd.: {item.quantity:.2f} {item.unity} - R$ {item.price}\n\n"
+                #txt_content += f"  Preço: R$ {item.price}\n"
 
                 if item.owner == UNDEFINED:
                     item.owner = user
@@ -186,7 +186,7 @@ class ReceiptBot:
                     pass
             
             if total > 0:
-                txt_content += f"\nTotal: R$ {total:.2f}"
+                txt_content += f"*Total*: R$ {total:.2f}"
             
             # Save items on csv
             Pdt.save_products(selected_items)
@@ -243,19 +243,24 @@ class ReceiptBot:
     async def products_sumup(self, update: Update):
         try:
             items = {}
-            messsage = '🛒 *Resumo das Últimas Compras*\n'
+            messsage = '📈 *Resumo das Últimas Compras:*\n\n'
+            total = 0
             for pdt in Pdt.load_products():
                 date = pdt.date.strftime("%d/%m")
                 owner = pdt.owner
                 if not date in items: items[date] = {}
                 if not owner in items[date]: items[date][owner] = 0
                 items[date][owner] += pdt.price
+                total += pdt.price
 
             for date,owners in items.items():
                 messsage += f'\[{date}]\n'
                 for o,v in owners.items():
                     messsage += f'{o}: R$ {v}\n'
                 messsage += '\n'
+
+            if total > 0:
+                messsage += f"\n*Total*: R$ {total:.2f}"
 
             await update.message.reply_text(messsage, parse_mode='Markdown')
 

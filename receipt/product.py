@@ -75,9 +75,9 @@ class Product():
     def _set_quantity(self,value):
         value_aux = value.split('Qtde total de ítens: ')
         try:
-            return value_aux[1].strip()
+            return float(value_aux[1].strip())
         except IndexError:
-            return value
+            return 0
     
     def _set_owner(self,owner):
         if self.formatted:
@@ -141,7 +141,7 @@ def backup_file():
         logging.info(f"File '{source_file}' renamed to '{destination_file}' (overwritten if existed).")
         with open(source_file, 'w') as file:
             file.write(PRODUCTS_FILEHEADER)
-            file.write('\n')
+            #file.write('\n')
     except FileNotFoundError:
         #print(f"Error: Source file '{source_file}' not found.")
         os.rename(source_file,destination_file)

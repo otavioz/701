@@ -104,9 +104,9 @@ class AP701Bot:
     #    return wrapped
 
     async def echo(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
-        welcome_text = f"Não entendi! Digite /help para ver uma lista de funcionalidades do bot."
-
-        await update.message.reply_text(welcome_text, parse_mode='Markdown')
+        if update.message.chat.type not in ['group', 'supergroup']:
+            welcome_text = f"Não entendi! Digite /help para ver uma lista de funcionalidades do bot."
+            await update.message.reply_text(welcome_text, parse_mode='Markdown')
 
     #@restricted
     async def start_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -115,7 +115,7 @@ class AP701Bot:
         welcome_text = f"""
         *Bot do 701*
         
-        Utilize \help para mais informações!
+        Utilize /help para mais informações!
 
         Criado por: Otávio V.
         """
