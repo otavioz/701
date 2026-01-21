@@ -127,7 +127,7 @@ class AP701Bot:
         # Log the error before we do anything else, so we can see it even if something breaks.
         self.logger.error("Exception while handling an update:", exc_info=context.error)
 
-        tb_list = traceback.format_exception(None, context.error, context.error.__traceback__)
+        #tb_list = traceback.format_exception(None, context.error, context.error.__traceback__)
         #message = (f"Warning: \n{html.escape(tb_list[-1]).split(':')[-1]}")
         #chat_id = update.message.chat.id
         # Finally, send the message

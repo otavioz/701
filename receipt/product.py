@@ -10,7 +10,8 @@ from collections import deque
 
 from consts import BKP_PRODUCT_DIR, PRODUCT_DIR, UNDEFINED, USERS_DIR
 
-PRODUCTS_FILEHEADER = 'product_name;code;quantity;unity;price;date;shop;owner;datetime'
+#PRODUCTS_FILEHEADER = 'product_name;code;quantity;unity;price;date;shop;owner;datetime'
+PRODUCTS_FILEHEADER = 'product_name;price;owner;date;code;quantity;unity;shop;datetime'
 
 class Product():
     def __init__(self,product_name, quantity, unity, price, owner, shop, code=None, date=None, formatted=False):
@@ -111,7 +112,7 @@ def save_products(product_list:list[Product]):
     with open(PRODUCT_DIR,'a') as f:
         for p in product_list:
             f.write('\n')
-            line = f'{p.product_name};{p.code};{p.quantity};{p.unity};{p.price};{p.date.strftime("%d/%m/%Y %H:%M:%S")};{p.shop};{p.owner};{now.strftime("%d/%m/%Y %H:%M:%S")}'
+            line = f'{p.product_name};{p.price};{p.owner};{p.date.strftime("%d/%m/%Y %H:%M:%S")};{p.code};{p.quantity};{p.unity};{p.shop};{now.strftime("%d/%m/%Y %H:%M:%S")}'
             f.write(line)
 
 @staticmethod
