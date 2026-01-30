@@ -60,7 +60,7 @@ class AP701Bot:
             #MessageHandler(filters.Document.IMAGE, self._safe_handler(self.handle_document_image)),
             CallbackQueryHandler(
                 self._safe_handler(self.handle_product_click), 
-                pattern="^(select_|deselect_|confirm_|cancel_)"
+                pattern="^(select_|deselect_|confirm_|cancel_|save_pix|adjust_pix)"
             ),
             CallbackQueryHandler(
                 self._safe_handler(self.handle_product_file), 
@@ -153,7 +153,7 @@ class AP701Bot:
         """Handle photo messages containing QR codes"""
         user_id = update.message.from_user.id
         try:
-            await update.message.reply_text("🔍 Procurando QR Code...")
+            await update.message.reply_text("🔍 Analisando imagem...")
             
             # Download photo
             photo_file = await update.message.photo[-1].get_file()
@@ -161,7 +161,7 @@ class AP701Bot:
                 temp_path = temp_file.name
             
             await photo_file.download_to_drive(temp_path)
-            await self.receipt.read_receipt(update,temp_path)
+            await self.receipt.read_image(update,temp_path)
             
         except Exception as e:
             self.logger.error(f"Error processing photo: {e}")

@@ -7,6 +7,8 @@ from typing import List, Dict, Any
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 
 from consts import PRODUCT_DIR, UNDEFINED
+from receipt.ocr import TesseractOCR
+from receipt.pix import Pix
 import receipt.product as Pdt
 from receipt.qrcode import QRCodeProcessor
 from receipt.webscrapping import WebScraper
@@ -19,17 +21,62 @@ class ReceiptBot:
 
     def __init__(self):
         self.user_sessions = {}
-        
-    async def read_receipt(self,update,temp_path):
-        user_id = update.message.from_user.id
 
+    async def read_image(self,update,temp_path):
         # Detect QR codes
         qr_codes = QRCodeProcessor.detect_qr_codes(temp_path)
         
-        if not qr_codes:
-            await update.message.reply_text("❌ Não foram encontrados QR Code na imagem enviada, certifique-se da qualidade.")
-            os.unlink(temp_path)
+        user_id = update.message.from_user.id
+        if user_id not in self.user_sessions:
+            self.user_sessions[user_id] = {
+                'items': None,
+                'selected_items': [],
+                'pix': None
+            }
+            
+        if qr_codes:
+            await self.read_receipt(update,temp_path,qr_codes)
             return
+        
+        await update.message.reply_text("Não foi encontrado um QR Code na imagem enviada, analisando comprovantes.")
+        receipt = TesseractOCR.extract_from_image(temp_path,save_raw=True)
+
+        if receipt:
+            await self.read_transaction(update,temp_path,receipt)
+            return
+        
+        os.unlink(temp_path)
+        await update.message.reply_text("❌ Não identificamos QRCodes ou Comprovantes na imagem, certifique-se da qualidade.")
+    
+    async def read_transaction(self,update,temp_path,receipt: Pix):
+        user_id = update.message.from_user.id
+
+        #receipt.save()
+        self.user_sessions[user_id]['pix'] = receipt
+
+        message_text = (
+            '💲 *Comprovante de Transferência/Pagamento:*\n\n'
+            f'Valor de: R$ {receipt.value:.2f}\n'
+            f'De: {receipt.from_} \n'
+            f'Para: {receipt.to_}\n'
+            f'Realizado em: {receipt.date_.strftime("%d/%m/%Y %H:%M:%S")}')
+        
+        # Add action buttons
+        keyboard = [[
+            InlineKeyboardButton("📝 Salvar", callback_data="save_pix"),
+            InlineKeyboardButton("❌ Tem algo errado", callback_data="adjust_pix")
+        ]]
+        
+        reply_markup = InlineKeyboardMarkup(keyboard)
+
+        os.unlink(temp_path)
+        await update.message.reply_text(message_text,
+                                         parse_mode='Markdown',
+                                         reply_markup=reply_markup)
+
+
+    async def read_receipt(self,update,temp_path,qr_codes):
+        user_id = update.message.from_user.id
         
         # Get first QR code that's a URL
         valid_qr = next((qr for qr in qr_codes if qr['is_url']), None)
@@ -55,6 +102,7 @@ class ReceiptBot:
             'selected_items': []
         }
         # Send items for selection
+        os.unlink(temp_path)
         await self.send_item_selection(update, user_id, items)
     
     async def select_items(self, update: Update, user_id: int, data):
@@ -89,6 +137,24 @@ class ReceiptBot:
             if user_id in self.user_sessions:
                 del self.user_sessions[user_id]
             await query.edit_message_text("Operação cancelada.")
+        
+        elif data == "save_pix":
+            # Save transaction on file
+            pix = self.user_sessions[user_id]['pix']
+            if user_id in self.user_sessions:
+                del self.user_sessions[user_id]
+            pix.save()
+            await query.edit_message_text("Feito!")
+
+        elif data == "adjust_pix":
+            # Save with exceptions
+            pix = self.user_sessions[user_id]['pix']
+            if user_id in self.user_sessions:
+                del self.user_sessions[user_id]
+            pix.correction()
+            pix.save()
+            await query.edit_message_text("Foi inserido um aviso para validação manual dos dados.")
+
 
 
     
@@ -256,7 +322,7 @@ class ReceiptBot:
             for date,owners in items.items():
                 messsage += f'\[{date}]\n'
                 for o,v in owners.items():
-                    messsage += f'{o}: R$ {v}\n'
+                    messsage += f'{o}: R$ {v:.2f}\n'
                 messsage += '\n'
 
             if total > 0:
