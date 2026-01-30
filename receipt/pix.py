@@ -91,7 +91,7 @@ class Pix():
         self.correction_ = True
 
     def save(self):
-        with open(TRANSFERS_DIR,'a') as f:
+        with open(TRANSFERS_DIR, 'a', encoding='utf-8') as f:
             f.write('\n')
             f.write(str(self))
         

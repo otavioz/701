@@ -103,7 +103,7 @@ class Product():
 @staticmethod
 def save_products(product_list:list[Product]):
     now = datetime.now()
-    with open(PRODUCT_DIR,'a') as f:
+    with open(PRODUCT_DIR, 'a', encoding='utf-8') as f:
         for p in product_list:
             f.write('\n')
             line = f'{p.product_name};{p.price};{p.owner};{p.date.strftime("%d/%m/%Y %H:%M:%S")};{p.code};{p.quantity};{p.unity};{p.shop};{now.strftime("%d/%m/%Y %H:%M:%S")}'
@@ -112,7 +112,7 @@ def save_products(product_list:list[Product]):
 @staticmethod
 def load_products() -> list[Product]:
     items = []
-    with open(PRODUCT_DIR,'r') as f:
+    with open(PRODUCT_DIR, 'r', encoding='utf-8') as f:
         f.readline()
         for p in f.readlines():
             p = p.split(';')

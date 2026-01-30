@@ -4,7 +4,7 @@ from consts import USERS_DIR
 
 
 def get_users():
-    with open(USERS_DIR, 'r',encoding='utf-8') as f:
+    with open(USERS_DIR, 'r', encoding='utf-8') as f:
         # Use json.load() to convert JSON data into a Python list
         data_list = json.load(f)
     return data_list
