@@ -36,7 +36,7 @@ class WebScraper:
         self.driver = webdriver.Chrome(options=chrome_options)
         self.driver.execute_script("Object.defineProperty(navigator, 'webdriver', {get: () => undefined})")
     
-    def scrape_receipt_items(self, url: str) -> List[Dict[str, str]]:
+    def scrape_receipt_items(self, url: str, user_id=None) -> List[Dict[str, str]]:
         """Scrape receipt items from website with table ID 'myTable'"""
         try:
             logger.info(f"Scraping URL: {url}")
@@ -73,7 +73,9 @@ class WebScraper:
                 except IndexError:
                     pass
                 
-
+            if owner == '':
+                owner = user_id
+                            
             # Find table with ID "myTable"
             table = soup.find('tbody', {'id': 'myTable'})
             if not table:

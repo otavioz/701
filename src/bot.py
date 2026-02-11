@@ -52,8 +52,9 @@ class AP701Bot:
             CommandHandler("start", self._safe_handler(self.start_command)),
             CommandHandler("help", self._safe_handler(self.help_command)),
             CommandHandler("qr", self._safe_handler(self.read_qrcode)),
-            CommandHandler("lproducts", self._safe_handler(self.download_products)),
-            CommandHandler("sumup", self._safe_handler(self.products_sumup)),
+            CommandHandler("dcompras", self._safe_handler(self.download_products)),
+            CommandHandler("drecibos", self._safe_handler(self.download_receipts)),
+            CommandHandler("resumocompras", self._safe_handler(self.products_sumup)),
             CommandHandler("bills", self._safe_handler(self.monthly_bills)),
             CommandHandler("add", self._safe_handler(self.add_user)),
             MessageHandler(filters.PHOTO, self._safe_handler(self.handle_photo)),
@@ -184,6 +185,10 @@ class AP701Bot:
     async def download_products(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         await self.receipt.get_product_data(update)
 
+    #@restricted
+    async def download_receipts(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
+        await self.receipt.get_receipts(update)
+
 
     #@restricted
     async def add_user(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -226,19 +231,22 @@ class AP701Bot:
                        
         *Comandos:*
         /qr ou foto enviada: 
-            Extrairei as compras feitas pelo QRCode.
+            Extrairei as compras feitas pelo QRCode\.
         
-        /lproducts:
-            Retorna um _.csv_ contendo todos as compras realizadas no mês por todos os moradores.
-        
-        /sumup:
-            Lista um resumo das ultimas compras feitas, contendo *Data*, *Autor* e *Valor Total*.
+        /dcompras:
+            Retorna um _\.csv_ contendo todos as compras realizadas no mês por todos os moradores\.
 
-        /bills: \[🚧 Breve 🚧]
-            Lista os valores das contas da casa, bem como o saldo em conta da casa e dos moradores.
+        /drecibos:
+            Retorna um _\.csv_ contendo todos as compras realizadas no mês por todos os moradores\.
+        
+        /resumocompras:
+            Lista um resumo das ultimas compras feitas, contendo *Data*, *Autor* e *Valor Total*\.
+
+        /bills: \[🚧 Breve 🚧\]
+            Lista os valores das contas da casa, bem como o saldo em conta da casa e dos moradores\.
             
         """
-        await update.message.reply_text(help_text, parse_mode='Markdown')
+        await update.message.reply_text(help_text, parse_mode='MarkdownV2')
     
     def _log_user_interaction(self, update: Update):
         """Log user interactions"""

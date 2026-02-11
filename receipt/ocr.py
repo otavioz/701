@@ -22,7 +22,7 @@ class TesseractOCR:
         text = pytesseract.image_to_string(img, lang='por')
         if save_raw:
             #image_path_o = str(image_path).replace('jpeg','txt')
-            image_path_o = 'downloads\doc.txt'
+            image_path_o = r'downloads\image_to_string.txt'
             with open(image_path_o,'w',encoding='utf-8') as f:
                 f.write(text)
         match Pix.which_bank(text):

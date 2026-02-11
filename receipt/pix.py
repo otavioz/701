@@ -101,8 +101,9 @@ class Pix():
             return 1
         elif 'Banco Inter S.A' in lines:
             return 2
-        else:
-            raise IndexError('Não foi possível origem do documento enviado.')
+        #else:
+        #    raise IndexError('Não foi possível origem do documento enviado.')
+
             
     
 class NuPix(Pix):

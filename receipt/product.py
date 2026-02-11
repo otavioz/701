@@ -83,14 +83,16 @@ class Product():
     def _set_owner(self,owner):
         if self.formatted:
             return owner
+        
+        owner_aux = None
         users = get_users()
         for key,value in users.items():
             if owner in value:
-                owner = key
+                owner_aux = key
                 break
-        if owner == '':
+        if not owner_aux:
             return UNDEFINED
-        return owner.strip()
+        return owner_aux.strip()
     
     def _set_date(self,date):
         if type(date) == str:
@@ -117,13 +119,13 @@ def load_products() -> list[Product]:
         for p in f.readlines():
             p = p.split(';')
             items.append(Product(product_name = p[0],
-                                    code = p[1],
-                                    quantity = p[2],
-                                    unity = p[3],
-                                    price = p[4],
-                                    date = p[5],
-                                    shop = p[6],
-                                    owner = p[7],
+                                    price = p[1],
+                                    owner = p[2],
+                                    date = p[3],
+                                    code = p[4],
+                                    quantity = p[5],
+                                    unity = p[6],
+                                    shop = p[7],
                                     formatted=True))
     return items
 

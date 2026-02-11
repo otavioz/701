@@ -2,6 +2,7 @@ import os
 import logging
 import tempfile
 from typing import List, Dict, Any
+from urllib.parse import urlparse
 
 # Third-party imports
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
@@ -86,10 +87,11 @@ class ReceiptBot:
             return
         
         qr_url = valid_qr['data']
-        await update.message.reply_text(f"🌐 Recibo encontrado: [fazenda.mg.gov]({qr_url})\n\nAnalisando items...",parse_mode='Markdown')
+        domain = urlparse(qr_url).netloc
+        await update.message.reply_text(f"🌐 Recibo encontrado: [{domain}]({qr_url})\n\nAnalisando items...",parse_mode='Markdown')
         
         # Scrape receipt items
-        items = WebScraper().scrape_receipt_items(qr_url)
+        items = WebScraper().scrape_receipt_items(qr_url, user_id)
         
         if not items:
             await update.message.reply_text("❌ Não foi possivel encontrar items em seu recibo.")
@@ -156,8 +158,6 @@ class ReceiptBot:
             await query.edit_message_text("Foi inserido um aviso para validação manual dos dados.")
 
 
-
-    
     async def clean_file(self, update: Update, user_id: int, data):
         query = update.callback_query
 
@@ -173,6 +173,7 @@ class ReceiptBot:
             if user_id in self.user_sessions:
                 del self.user_sessions[user_id]
             await query.edit_message_caption("Feito!")
+    
         
     async def send_item_selection(self, update: Update, user_id: int, items: List[Dict]):
         """Send interactive message for item selection"""
@@ -224,7 +225,6 @@ class ReceiptBot:
     
     async def save_selected_items(self, update: Update, user_id: int, items: List[Pdt.Product]):
         """Save selected items to TXT file"""
-        user = update.effective_user.username
         selected_items = [item for item in items if item.selected]
 
         try:
@@ -241,9 +241,6 @@ class ReceiptBot:
                 txt_content += f"  {i}. {item.product_name}\n"
                 txt_content += f"  Qtd.: {item.quantity:.2f} {item.unity} - R$ {item.price}\n\n"
                 #txt_content += f"  Preço: R$ {item.price}\n"
-
-                if item.owner == UNDEFINED:
-                    item.owner = user
                 
                 # Try to extract numeric price for total
                 try:
@@ -305,7 +302,27 @@ class ReceiptBot:
             await update.message.reply_text(
                 "❌ Ocorreu um erro ao enviar o arquivo."
             )
-        
+      
+    async def get_receipts(self, update: Update):
+        #Send file to user
+        reply_markup = InlineKeyboardMarkup([[
+            InlineKeyboardButton("🧹 Limpar Arquivo", callback_data="clean_file_2"),
+            InlineKeyboardButton("📝 Manter", callback_data="keep_2")
+        ]])
+ 
+        try:
+            with open(PRODUCT_DIR, 'rb') as file:
+                await update.message.reply_document(
+                    document=file,
+                    reply_markup=reply_markup,
+                    filename="compras.csv",
+                    caption=f"Aqui está o arquivo! Gostaria de limpá-lo?"
+                )
+        except Exception as e:
+            logger.error(f"Error sending file: {e}")
+            await update.message.reply_text(
+                "❌ Ocorreu um erro ao enviar o arquivo."
+            )  
     async def products_sumup(self, update: Update):
         try:
             items = {}
