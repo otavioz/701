@@ -315,7 +315,7 @@ class ReceiptBot:
                 await update.message.reply_document(
                     document=file,
                     reply_markup=reply_markup,
-                    filename="compras.csv",
+                    filename="recibos.csv",
                     caption=f"Aqui está o arquivo! Gostaria de limpá-lo?"
                 )
         except Exception as e:
