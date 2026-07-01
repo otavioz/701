@@ -5,3 +5,9 @@ data/
 tests/
 tests.py
 **/__pycache__/
+Pipfile.lock
+Pipfile
+data/products.csv
+handler/__pycache__/
+receipt/__pycache__/
+src/__pycache__/
