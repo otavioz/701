@@ -1,0 +1,2 @@
+class DuplicatedValue(Exception):
+    pass

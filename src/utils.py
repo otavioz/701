@@ -1,6 +1,8 @@
 from collections import deque
 import json
 from consts import USERS_DIR
+from PIL import Image
+
 
 
 def get_users():
@@ -8,6 +10,10 @@ def get_users():
         # Use json.load() to convert JSON data into a Python list
         data_list = json.load(f)
     return data_list
+
+def save_img_bkp(path,user_id):
+    img = Image.open(path)
+    img.save(f'downloas/{user_id}_{img.filename}')
 
 class FixedSizeArray:
     def __init__(self, max_size):

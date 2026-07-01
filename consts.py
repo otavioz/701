@@ -1,7 +1,7 @@
 UNDEFINED = 'undefined'
+DATABASE = 'data/data.json'
 USER_DATA = 'data/user_data.json'
 PRODUCT_DIR = 'data/products.csv'
-BKP_PRODUCT_DIR = 'data/bkp_products.csv'
 USERS_DIR = 'data/products_users.json'
 TRANSFERS_DIR = 'data/transfers.csv'
 MONTH_MAP = {

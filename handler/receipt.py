@@ -7,12 +7,16 @@ from urllib.parse import urlparse
 # Third-party imports
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 
-from consts import PRODUCT_DIR, UNDEFINED
+from consts import PRODUCT_DIR, UNDEFINED, DATABASE
+from src.database import DatabaseManager
 from receipt.ocr import TesseractOCR
 from receipt.pix import Pix
-import receipt.product as Pdt
+from receipt.product import Product
 from receipt.qrcode import QRCodeProcessor
 from receipt.webscrapping import WebScraper
+from src.utils import save_img_bkp
+
+
 
 logger = logging.getLogger(__name__)
 
@@ -22,8 +26,16 @@ class ReceiptBot:
 
     def __init__(self):
         self.user_sessions = {}
+        self.db = DatabaseManager(DATABASE)
 
-    async def read_image(self,update,temp_path):
+    async def read_image(self,update): #,temp_path):
+        # Download photo
+        photo_file = await update.message.photo[-1].get_file()
+        with tempfile.NamedTemporaryFile(delete=False, suffix='.jpg') as temp_file:
+            temp_path = temp_file.name
+        
+        await photo_file.download_to_drive(temp_path)
+
         # Detect QR codes
         qr_codes = QRCodeProcessor.detect_qr_codes(temp_path)
         
@@ -32,29 +44,50 @@ class ReceiptBot:
             self.user_sessions[user_id] = {
                 'items': None,
                 'selected_items': [],
-                'pix': None
+                'pix': None,
+                'temp_path': temp_path
             }
             
         if qr_codes:
             await self.read_receipt(update,temp_path,qr_codes)
+            os.unlink(temp_path)
             return
         
-        await update.message.reply_text("Não foi encontrado um QR Code na imagem enviada, analisando comprovantes.")
+        #await update.message.reply_text("Não foi encontrado um QR Code na imagem enviada, analisando comprovantes.")
         receipt = TesseractOCR.extract_from_image(temp_path,save_raw=True)
 
         if receipt:
             await self.read_transaction(update,temp_path,receipt)
+            os.unlink(temp_path)
             return
         
-        os.unlink(temp_path)
-        await update.message.reply_text("❌ Não identificamos QRCodes ou Comprovantes na imagem, certifique-se da qualidade.")
+        #await update.message.reply_text("❌ Não identificamos QRCodes ou Comprovantes na imagem, certifique-se da qualidade.")
+
+        # Download photo again
+        photo_file = await update.message.photo[-1].get_file()
+
+        # Add action buttons
+        message_text = (
+            'Não identificamos QRCodes ou Comprovantes na imagem, certifique-se da qualidade.\n'
+            'Caso o envio seja de um QR Code, você pode lê-lo e enviar a URL resultante aqui. Ou ainda, pode solicitar inserção manual, salvando a imagem.')
+        
+        keyboard = [[
+            InlineKeyboardButton("Salvar Imagem", callback_data="save_backup"),
+            InlineKeyboardButton("Cancelar", callback_data="cancel_")
+        ]]
+        
+        reply_markup = InlineKeyboardMarkup(keyboard)
+
+        #os.unlink(temp_path)
+        await update.message.reply_text(message_text, parse_mode='Markdown', reply_markup=reply_markup)
+
     
     async def read_transaction(self,update,temp_path,receipt: Pix):
         user_id = update.message.from_user.id
 
         #receipt.save()
         self.user_sessions[user_id]['pix'] = receipt
-
+        
         message_text = (
             '💲 *Comprovante de Transferência/Pagamento:*\n\n'
             f'Valor de: R$ {receipt.value:.2f}\n'
@@ -62,6 +95,7 @@ class ReceiptBot:
             f'Para: {receipt.to_}\n'
             f'Realizado em: {receipt.date_.strftime("%d/%m/%Y %H:%M:%S")}')
         
+        self.user_sessions[user_id]['text'] = message_text
         # Add action buttons
         keyboard = [[
             InlineKeyboardButton("📝 Salvar", callback_data="save_pix"),
@@ -70,7 +104,7 @@ class ReceiptBot:
         
         reply_markup = InlineKeyboardMarkup(keyboard)
 
-        os.unlink(temp_path)
+        #os.unlink(temp_path)
         await update.message.reply_text(message_text,
                                          parse_mode='Markdown',
                                          reply_markup=reply_markup)
@@ -83,7 +117,7 @@ class ReceiptBot:
         valid_qr = next((qr for qr in qr_codes if qr['is_url']), None)
         if not valid_qr:
             await update.message.reply_text("❌ Não há uma URL válida no QR Code enontrado.")
-            os.unlink(temp_path)
+            #os.unlink(temp_path)
             return
         
         qr_url = valid_qr['data']
@@ -94,8 +128,8 @@ class ReceiptBot:
         items = WebScraper().scrape_receipt_items(qr_url, user_id)
         
         if not items:
-            await update.message.reply_text("❌ Não foi possivel encontrar items em seu recibo.")
-            os.unlink(temp_path)
+            await update.message.reply_text("❌ Não foi possivel encontrar items em seu recibo, tente novamente mais tarde.")
+            #os.unlink(temp_path)
             return
         
         # Store items in user session
@@ -103,8 +137,9 @@ class ReceiptBot:
             'items': items,
             'selected_items': []
         }
+
         # Send items for selection
-        os.unlink(temp_path)
+        #os.unlink(temp_path)
         await self.send_item_selection(update, user_id, items)
     
     async def select_items(self, update: Update, user_id: int, data):
@@ -143,10 +178,12 @@ class ReceiptBot:
         elif data == "save_pix":
             # Save transaction on file
             pix = self.user_sessions[user_id]['pix']
+            text = self.user_sessions[user_id]['text']
             if user_id in self.user_sessions:
                 del self.user_sessions[user_id]
-            pix.save()
-            await query.edit_message_text("Feito!")
+            #pix.save()
+            self.db.create_pix(pix)
+            await query.edit_message_text(f'Transação salva!\n{text}',parse_mode='Markdown')
 
         elif data == "adjust_pix":
             # Save with exceptions
@@ -154,7 +191,8 @@ class ReceiptBot:
             if user_id in self.user_sessions:
                 del self.user_sessions[user_id]
             pix.correction()
-            pix.save()
+            #pix.save()
+            self.db.create_pix(pix)
             await query.edit_message_text("Foi inserido um aviso para validação manual dos dados.")
 
 
@@ -164,10 +202,22 @@ class ReceiptBot:
         #if user_id not in self.user_sessions: # self.user_sessions is not global
         #    return await query.edit_message_text("Sessão expirada, inicie novamente.")
 
-        if data == "clean_file":
-            # Cancel operation
-            Pdt.backup_file()
+        if data == "clean_file_2":
+            Pix.backup_file()
             await query.edit_message_caption("Arquivo limpo.")
+        elif data == "clean_file":
+            Product.backup_file()
+            await query.edit_message_caption("Arquivo limpo.")
+        elif data == 'save_backup':
+            #Product.backup_file() #TODO MEIORA ISSO
+            if user_id in self.user_sessions and 'temp_path' in self.user_sessions[user_id]:
+                temp_path = self.user_sessions[user_id]['temp_path']
+                if 'temp_path' in locals() and os.path.exists(temp_path):
+                    save_img_bkp(temp_path,user_id)
+                    os.unlink(temp_path)
+                    return await query.edit_message_caption("Imagem salva para avaliação manual posterior.")
+                return await query.edit_message_caption("Imagem não foi encontrada, gentileza enviar novamente.")
+            return await query.edit_message_caption("Sessão expirada, inicie novamente.")
         elif data == "keep_":
             # Cancel operation
             if user_id in self.user_sessions:
@@ -223,7 +273,7 @@ class ReceiptBot:
                 parse_mode='Markdown'
             )
     
-    async def save_selected_items(self, update: Update, user_id: int, items: List[Pdt.Product]):
+    async def save_selected_items(self, update: Update, user_id: int, items: List[Product]):
         """Save selected items to TXT file"""
         selected_items = [item for item in items if item.selected]
 
@@ -252,7 +302,9 @@ class ReceiptBot:
                 txt_content += f"*Total*: R$ {total:.2f}"
             
             # Save items on csv
-            Pdt.save_products(selected_items)
+            Product.save_products(selected_items)
+            for product in selected_items:
+                self.db.create_product(product)
 
             # Save to temporary file
             #with tempfile.NamedTemporaryFile(mode='w', delete=False, suffix='.txt', encoding='utf-8') as f:
@@ -307,7 +359,7 @@ class ReceiptBot:
         #Send file to user
         reply_markup = InlineKeyboardMarkup([[
             InlineKeyboardButton("🧹 Limpar Arquivo", callback_data="clean_file_2"),
-            InlineKeyboardButton("📝 Manter", callback_data="keep_2")
+            InlineKeyboardButton("📝 Manter", callback_data="keep_")
         ]])
  
         try:
@@ -315,7 +367,7 @@ class ReceiptBot:
                 await update.message.reply_document(
                     document=file,
                     reply_markup=reply_markup,
-                    filename="compras.csv",
+                    filename="recibos.csv",
                     caption=f"Aqui está o arquivo! Gostaria de limpá-lo?"
                 )
         except Exception as e:
@@ -328,7 +380,7 @@ class ReceiptBot:
             items = {}
             messsage = '📈 *Resumo das Últimas Compras:*\n\n'
             total = 0
-            for pdt in Pdt.load_products():
+            for pdt in Product.load_products():
                 date = pdt.date.strftime("%d/%m")
                 owner = pdt.owner
                 if not date in items: items[date] = {}

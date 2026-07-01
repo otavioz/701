@@ -1,9 +1,13 @@
 from datetime import datetime
+import logging
+import os
 import re
+from typing import Dict, Optional
+import uuid
 
 from consts import MONTH_MAP, TRANSFERS_DIR
 from src.utils import get_users
-
+FILEHEADER = 'from;to;value;institution;code;date;include_date;fix'
 
 class Pix():
 
@@ -16,6 +20,54 @@ class Pix():
         self.bank_ = 'N/I'
         self.include_date = datetime.now()
         self.correction_ = False
+
+    def __init__(self, from_: str = None, to_: str = None, value: float = 0.0,
+                 id_: Optional[str] = None, date_: Optional[datetime] = None,
+                 bank_: str = 'N/I', correction_: bool = False):
+        self.from_ = from_
+        self.to_ = to_
+        self.value = float(value) if value is not None else 0.0
+        self.id_ = id_ or str(uuid.uuid4())[:8]
+        self.date_ = date_ if date_ is not None else datetime.now()
+        self.bank_ = bank_
+        self.include_date = datetime.now()
+        self.correction_ = correction_
+
+
+    def to_dict(self) -> Dict:
+        """Convert Pix object to dictionary for storage."""
+        return {
+            'from_': self.from_,
+            'to_': self.to_,
+            'value': self.value,
+            'id_': self.id_,
+            'date_': self.date_.isoformat(),
+            'bank_': self.bank_,
+            'include_date': self.include_date.isoformat(),
+            'correction_': self.correction_
+        }
+    
+    @classmethod
+    def from_dict(cls, data: Dict) -> 'Pix':
+        """Create Pix object from dictionary."""
+        pix = cls(
+            from_=data['from_'],
+            to_=data['to_'],
+            value=data['value'],
+            id_=data['id_'],
+            date_=datetime.fromisoformat(data['date_']) if isinstance(data['date_'], str) else data['date_'],
+            bank_=data['bank_'],
+            correction_=data['correction_']
+        )
+        pix.include_date = datetime.fromisoformat(data['include_date']) if isinstance(data['include_date'], str) else data['include_date']
+        return pix
+    
+    def __str__(self) -> str:
+        return f"Pix(id={self.id_}, from={self.from_}, to={self.to_}, value={self.value})"
+    
+    def __repr__(self) -> str:
+        return self.__str__()
+
 
     def __str__(self):
         return f'{self.from_};{self.to_};{self.value};{self.bank_};{self.id_};{self.date_.strftime("%d/%m/%Y %H:%M:%S")};{self.include_date.strftime("%d/%m/%Y %H:%M:%S")};{self.correction_}'
@@ -104,7 +156,21 @@ class Pix():
         #else:
         #    raise IndexError('Não foi possível origem do documento enviado.')
 
-            
+    @staticmethod
+    def backup_file():
+        source_file = TRANSFERS_DIR
+        destination_file = TRANSFERS_DIR.replace('.csv','_bkp.csv')
+        try:
+            os.replace(source_file, destination_file)
+            logging.info(f"File '{source_file}' renamed to '{destination_file}' (overwritten if existed).")
+            with open(source_file, 'w') as file:
+                file.write(FILEHEADER)
+                #file.write('\n')
+        except FileNotFoundError:
+            #print(f"Error: Source file '{source_file}' not found.")
+            os.rename(source_file,destination_file)
+        except OSError:
+            raise OSError("Erro ao tentar limpar arquivo!")            
     
 class NuPix(Pix):
     """Extractor specifically for NuBank Pix receipts"""
@@ -183,7 +249,7 @@ class InterPix(Pix):
         pattern = r'\d{1,2}[:h]\d{2}'
         match = re.search(pattern, date_hour, re.IGNORECASE)
         hour = match.group() if match else '00:00'
+        hour = hour.replace('h',':') #Caso padrão seja 00h00 susbtituir
         date_hour = date + ' ' + hour
         return datetime.strptime(date_hour, '%d/%m/%Y %H:%M')
     
-        

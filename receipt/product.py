@@ -1,13 +1,15 @@
 
+from itertools import product
 import json
 import logging
 import os
 import re
 from datetime import datetime
 import re
+from typing import Dict
 from bs4 import BeautifulSoup as BS
 
-from consts import BKP_PRODUCT_DIR, PRODUCT_DIR, UNDEFINED, USERS_DIR
+from consts import PRODUCT_DIR, UNDEFINED, USERS_DIR
 from src.utils import get_users
 
 #PRODUCTS_FILEHEADER = 'product_name;code;quantity;unity;price;date;shop;owner;datetime'
@@ -26,6 +28,7 @@ class Product():
         self.owner = self._set_owner(owner)
         self.shop = shop
         self.date = self._set_date(date)
+        self.created_at = datetime.now()
 
         #On reading attrs
         self.selected = False
@@ -74,6 +77,9 @@ class Product():
             return value
 
     def _set_quantity(self,value):
+        if self.formatted:
+            return float(value)
+        
         value_aux = value.split('Qtde total de ítens: ')
         try:
             return float(value_aux[1].strip())
@@ -91,7 +97,7 @@ class Product():
                 owner_aux = key
                 break
         if not owner_aux:
-            return UNDEFINED
+            return f'(NOVO){owner}'
         return owner_aux.strip()
     
     def _set_date(self,date):
@@ -101,47 +107,92 @@ class Product():
             return date
         return datetime.now()
 
+    def to_dict(self) -> Dict:
+        """Convert Product object to dictionary for storage."""
+        return {
+            'formatted': self.formatted,
+            'product_name': self.product_name,
+            'code': self.code,
+            'quantity': self.quantity,
+            'unity': self.unity,
+            'price': self.price,
+            'owner': self.owner,
+            'shop': self.shop,
+            'date': self.date.isoformat(),
+            'created_at': self.created_at.isoformat()
+        }
+    
+    @classmethod
+    def from_dict(cls, data: Dict) -> 'Product':
+        """Create Product object from dictionary."""
+        product = cls(
+            product_name=data['product_name'],
+            code=data['code'],
+            quantity=data['quantity'],
+            unity=data['unity'],
+            price=data['price'],
+            owner=data['owner'],
+            shop=data['shop'],
+            date=datetime.fromisoformat(data['date']) if isinstance(data['date'], str) else data['date'],
+            formatted=data['formatted']
+        )
+        product.created_at = datetime.fromisoformat(data['created_at']) if isinstance(data['created_at'], str) else data['created_at']
+        return product
+    
+    def update_quantity(self, new_quantity: int) -> None:
+        """Update product quantity with validation."""
+        self.quantity = self._set_quantity(new_quantity)
+    
+    def update_price(self, new_price: float) -> None:
+        """Update product price with validation."""
+        self.price = self._set_amount(new_price)
+    
+    def __str__(self) -> str:
+        return f"Product(name={self.product_name}, code={self.code}, quantity={self.quantity}, price={self.price})"
+    
+    def __repr__(self) -> str:
+        return self.__str__()
+    
+    @staticmethod
+    def save_products(product_list:list[product]):
+        now = datetime.now()
+        with open(PRODUCT_DIR, 'a', encoding='utf-8') as f:
+            for p in product_list:
+                f.write('\n')
+                line = f'{p.product_name};{p.price};{p.owner};{p.date.strftime("%d/%m/%Y %H:%M:%S")};{p.code};{p.quantity};{p.unity};{p.shop};{now.strftime("%d/%m/%Y %H:%M:%S")}'
+                f.write(line)
+    
+    @staticmethod
+    def load_products() -> list[product]:
+        items = []
+        with open(PRODUCT_DIR, 'r', encoding='utf-8') as f:
+            f.readline()
+            for p in f.readlines():
+                p = p.split(';')
+                items.append(Product(product_name = p[0],
+                                        price = p[1],
+                                        owner = p[2],
+                                        date = p[3],
+                                        code = p[4],
+                                        quantity = p[5],
+                                        unity = p[6],
+                                        shop = p[7],
+                                        formatted=True))
+        return items
 
-@staticmethod
-def save_products(product_list:list[Product]):
-    now = datetime.now()
-    with open(PRODUCT_DIR, 'a', encoding='utf-8') as f:
-        for p in product_list:
-            f.write('\n')
-            line = f'{p.product_name};{p.price};{p.owner};{p.date.strftime("%d/%m/%Y %H:%M:%S")};{p.code};{p.quantity};{p.unity};{p.shop};{now.strftime("%d/%m/%Y %H:%M:%S")}'
-            f.write(line)
-
-@staticmethod
-def load_products() -> list[Product]:
-    items = []
-    with open(PRODUCT_DIR, 'r', encoding='utf-8') as f:
-        f.readline()
-        for p in f.readlines():
-            p = p.split(';')
-            items.append(Product(product_name = p[0],
-                                    price = p[1],
-                                    owner = p[2],
-                                    date = p[3],
-                                    code = p[4],
-                                    quantity = p[5],
-                                    unity = p[6],
-                                    shop = p[7],
-                                    formatted=True))
-    return items
-
-@staticmethod
-def backup_file():
-    source_file = PRODUCT_DIR
-    destination_file = BKP_PRODUCT_DIR
-    try:
-        os.replace(source_file, destination_file)
-        logging.info(f"File '{source_file}' renamed to '{destination_file}' (overwritten if existed).")
-        with open(source_file, 'w') as file:
-            file.write(PRODUCTS_FILEHEADER)
-            #file.write('\n')
-    except FileNotFoundError:
-        #print(f"Error: Source file '{source_file}' not found.")
-        os.rename(source_file,destination_file)
-    except OSError:
-        raise OSError("Erro ao tentar limpar arquivo!")
+    @staticmethod
+    def backup_file():
+        source_file = PRODUCT_DIR
+        destination_file = PRODUCT_DIR.replace('.csv','_bkp.csv')
+        try:
+            os.replace(source_file, destination_file)
+            logging.info(f"File '{source_file}' renamed to '{destination_file}' (overwritten if existed).")
+            with open(source_file, 'w') as file:
+                file.write(PRODUCTS_FILEHEADER)
+                #file.write('\n')
+        except FileNotFoundError:
+            #print(f"Error: Source file '{source_file}' not found.")
+            os.rename(source_file,destination_file)
+        except OSError:
+            raise OSError("Erro ao tentar limpar arquivo!")
 

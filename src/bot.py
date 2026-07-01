@@ -15,6 +15,7 @@ from telegram.ext import (
     Application, CommandHandler, MessageHandler, 
     CallbackQueryHandler, ContextTypes, filters, Defaults
 )
+from src.exceptions import DuplicatedValue
 from src.config import get_permitted_users, set_permitted_user
 from handler.receipt import ReceiptBot
 
@@ -61,13 +62,11 @@ class AP701Bot:
             #MessageHandler(filters.Document.IMAGE, self._safe_handler(self.handle_document_image)),
             CallbackQueryHandler(
                 self._safe_handler(self.handle_product_click), 
-                pattern="^(select_|deselect_|confirm_|cancel_|save_pix|adjust_pix)"
-            ),
+                pattern="^(select_|deselect_|confirm_|cancel_|save_pix|adjust_pix)"),
             CallbackQueryHandler(
                 self._safe_handler(self.handle_product_file), 
-                pattern="^(clean_file|keep_)"
-            ),
-             MessageHandler(filters.TEXT & ~filters.COMMAND, self.echo)
+                pattern="^(clean_file|keep_)"),
+            MessageHandler(filters.TEXT & ~filters.COMMAND, self.echo)
         ]
         
         for handler in handlers:
@@ -157,20 +156,20 @@ class AP701Bot:
             await update.message.reply_text("🔍 Analisando imagem...")
             
             # Download photo
-            photo_file = await update.message.photo[-1].get_file()
-            with tempfile.NamedTemporaryFile(delete=False, suffix='.jpg') as temp_file:
-                temp_path = temp_file.name
-            
-            await photo_file.download_to_drive(temp_path)
-            await self.receipt.read_image(update,temp_path)
+            #photo_file = await update.message.photo[-1].get_file()
+            #with tempfile.NamedTemporaryFile(delete=False, suffix='.jpg') as temp_file:
+            #    temp_path = temp_file.name
+            #
+            #await photo_file.download_to_drive(temp_path)
+            await self.receipt.read_image(update) #,temp_path)
             
         except Exception as e:
             self.logger.error(f"Error processing photo: {e}")
             await update.message.reply_text("❌ Houve um erro durante o processamento da sua imagem, tente novamente.")
-        finally:
-            # Cleanup
-            if 'temp_path' in locals() and os.path.exists(temp_path):
-                os.unlink(temp_path)
+        #finally:
+        #    # Cleanup
+        #    if 'temp_path' in locals() and os.path.exists(temp_path):
+        #        os.unlink(temp_path)
 
     #@restricted
     async def read_qrcode(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -211,7 +210,10 @@ class AP701Bot:
         
         user_id = query.from_user.id
         data = query.data
-        await self.receipt.select_items(update, user_id, data)
+        try:
+            await self.receipt.select_items(update, user_id, data)
+        except DuplicatedValue as e:
+            await update.callback_query.edit_message_text(f'Transação informada ({e}) já existe na base da dados.')
     
     #@restricted
     async def handle_product_file(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -237,7 +239,7 @@ class AP701Bot:
             Retorna um _\.csv_ contendo todos as compras realizadas no mês por todos os moradores\.
 
         /drecibos:
-            Retorna um _\.csv_ contendo todos as compras realizadas no mês por todos os moradores\.
+            Retorna um _\.csv_ contendo todos as transferências realizadas no mês por todos os moradores\.
         
         /resumocompras:
             Lista um resumo das ultimas compras feitas, contendo *Data*, *Autor* e *Valor Total*\.
