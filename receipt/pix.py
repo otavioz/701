@@ -7,23 +7,16 @@ import uuid
 
 from consts import MONTH_MAP, TRANSFERS_DIR
 from src.utils import get_users
-FILEHEADER = 'from;to;value;institution;code;date;include_date;fix'
+FILEHEADER = 'from;to;value;institution;code;date;include_date;fix;reference_year;reference_month'
 
 class Pix():
 
-    def __init__(self):
-        self.from_ = str
-        self.to_ = str
-        self.value = str
-        self.id_ = str
-        self.date_ = datetime
-        self.bank_ = 'N/I'
-        self.include_date = datetime.now()
-        self.correction_ = False
-
     def __init__(self, from_: str = None, to_: str = None, value: float = 0.0,
                  id_: Optional[str] = None, date_: Optional[datetime] = None,
-                 bank_: str = 'N/I', correction_: bool = False):
+                 bank_: str = 'N/I', correction_: bool = False,
+                 reference_year: Optional[int] = None, 
+                 reference_month: Optional[int] = None,
+                 doc_id:Optional[int] = None):
         self.from_ = from_
         self.to_ = to_
         self.value = float(value) if value is not None else 0.0
@@ -32,7 +25,13 @@ class Pix():
         self.bank_ = bank_
         self.include_date = datetime.now()
         self.correction_ = correction_
+        
+        # New attributes
+        self.reference_year = reference_year if reference_year is not None else self.date_.year
+        self.reference_month = reference_month if reference_month is not None else self.date_.month
 
+        #On reading attrs
+        self.doc_id = doc_id
 
     def to_dict(self) -> Dict:
         """Convert Pix object to dictionary for storage."""
@@ -44,11 +43,13 @@ class Pix():
             'date_': self.date_.isoformat(),
             'bank_': self.bank_,
             'include_date': self.include_date.isoformat(),
-            'correction_': self.correction_
+            'correction_': self.correction_,
+            'reference_year': self.reference_year,
+            'reference_month': self.reference_month
         }
     
     @classmethod
-    def from_dict(cls, data: Dict) -> 'Pix':
+    def from_dict(cls, data: Dict, doc_id: int = None) -> 'Pix':
         """Create Pix object from dictionary."""
         pix = cls(
             from_=data['from_'],
@@ -57,7 +58,11 @@ class Pix():
             id_=data['id_'],
             date_=datetime.fromisoformat(data['date_']) if isinstance(data['date_'], str) else data['date_'],
             bank_=data['bank_'],
-            correction_=data['correction_']
+            correction_=data['correction_'],
+            reference_year=data.get('reference_year'),
+            reference_month=data.get('reference_month'),
+
+            doc_id = doc_id
         )
         pix.include_date = datetime.fromisoformat(data['include_date']) if isinstance(data['include_date'], str) else data['include_date']
         return pix
@@ -68,32 +73,34 @@ class Pix():
     def __repr__(self) -> str:
         return self.__str__()
 
+    def to_csv_line(self) -> str:
+        """Convert to CSV line format."""
+        return f'{self.from_};{self.to_};{self.value};{self.bank_};{self.id_};{self.date_.strftime("%d/%m/%Y %H:%M:%S")};{self.include_date.strftime("%d/%m/%Y %H:%M:%S")};{self.correction_};{self.reference_year};{self.reference_month}'
 
-    def __str__(self):
-        return f'{self.from_};{self.to_};{self.value};{self.bank_};{self.id_};{self.date_.strftime("%d/%m/%Y %H:%M:%S")};{self.include_date.strftime("%d/%m/%Y %H:%M:%S")};{self.correction_}'
+    __str__ = to_csv_line  # Keep the original __str__ behavior
 
-    def set_from(self,from_):
+    def set_from(self, from_):
         aux = from_.replace('Nome', '').strip()
         aux = aux.replace('Pagador', '').strip()
         users = get_users()
-        for key,value in users.items():
+        for key, value in users.items():
             if aux in value:
                 aux = key
                 break
         return aux
     
-    def set_to(self,to_):
+    def set_to(self, to_):
         aux = to_.replace('Nome', '').strip()
         aux = aux.replace('Favorecido', '').strip()
         aux = aux.replace('Favoreci', '').strip()
         users = get_users()
-        for key,value in users.items():
+        for key, value in users.items():
             if aux in value:
                 aux = key
                 break
         return aux
 
-    def set_value(self,value_str):
+    def set_value(self, value_str):
         # Remove R$ symbol and any whitespace
         cleaned = re.sub(r'R\$\s*', '', value_str.strip())
         
@@ -110,11 +117,11 @@ class Pix():
         except ValueError:
             raise ValueError(f"Cannot convert '{value_str}' to float")
     
-    def get_data(self,lines) -> list[str]:
+    def get_data(self, lines) -> list[str]:
         from_ = to_ = id = id_aux = date = date_aux = value_i = ''
 
-        in_to =  True
-        for index,line in enumerate(lines):
+        in_to = True
+        for index, line in enumerate(lines):
             if ('Nome' in line and in_to) or 'Favoreci' in line or 'Estabelecimento' in line:
                 to_ = line
                 in_to = False
@@ -139,13 +146,13 @@ class Pix():
         return from_, to_, value_i, id, id_aux, date, date_aux
 
     def correction(self):
-        #The data must be checked manually later
+        # The data must be checked manually later
         self.correction_ = True
 
     def save(self):
         with open(TRANSFERS_DIR, 'a', encoding='utf-8') as f:
             f.write('\n')
-            f.write(str(self))
+            f.write(self.to_csv_line())
         
     @staticmethod
     def which_bank(lines):
@@ -153,45 +160,49 @@ class Pix():
             return 1
         elif 'Banco Inter S.A' in lines:
             return 2
-        #else:
+        # else:
         #    raise IndexError('Não foi possível origem do documento enviado.')
 
     @staticmethod
     def backup_file():
         source_file = TRANSFERS_DIR
-        destination_file = TRANSFERS_DIR.replace('.csv','_bkp.csv')
+        destination_file = TRANSFERS_DIR.replace('.csv', '_bkp.csv')
         try:
             os.replace(source_file, destination_file)
             logging.info(f"File '{source_file}' renamed to '{destination_file}' (overwritten if existed).")
             with open(source_file, 'w') as file:
                 file.write(FILEHEADER)
-                #file.write('\n')
+                # file.write('\n')
         except FileNotFoundError:
-            #print(f"Error: Source file '{source_file}' not found.")
-            os.rename(source_file,destination_file)
+            # print(f"Error: Source file '{source_file}' not found.")
+            os.rename(source_file, destination_file)
         except OSError:
             raise OSError("Erro ao tentar limpar arquivo!")            
     
 class NuPix(Pix):
     """Extractor specifically for NuBank Pix receipts"""
     
-    def __init__(self,lines):
+    def __init__(self, lines):
         super().__init__()
-        from_, to_,value, id, id_aux, date, date_aux = self.get_data(lines)
+        from_, to_, value, id, id_aux, date, date_aux = self.get_data(lines)
 
         self.from_ = self.set_from(from_)
         self.to_ = self.set_to(to_)
         self.value = self.set_value(value)
-        self.id_ = self.set_id(id,id_aux)
+        self.id_ = self.set_id(id, id_aux)
         self.date_ = self.set_date(date, date_aux)
         self.bank_ = 'NuBank'
 
         self.include_date = datetime.now()
+        
+        # Set reference year and month from the transaction date
+        self.reference_year = self.date_.year
+        self.reference_month = self.date_.month
 
-    def set_id(self,id_,id_2):
-        aux = id_.replace('ID da transação:','').strip()
+    def set_id(self, id_, id_2):
+        aux = id_.replace('ID da transação:', '').strip()
         if aux == '':
-            aux = id_2.replace('ID da transação:','').strip()
+            aux = id_2.replace('ID da transação:', '').strip()
         return aux
 
     def set_date(self, _, date_string):
@@ -199,7 +210,7 @@ class NuPix(Pix):
         # Pattern2: 22 JAN 2026 - 19:56:42
 
         patterns = [r'(\d{1,2})([A-Z]{3,})\s+(\d{4})\s*[-\s]+\s*(\d{1,2}):(\d{2}):(\d{2})'
-                   ,r'(\d{1,2})\s([A-Z]{3,})\s+(\d{4})\s*[-\s]+\s*(\d{1,2}):(\d{2}):(\d{2})']
+                   , r'(\d{1,2})\s([A-Z]{3,})\s+(\d{4})\s*[-\s]+\s*(\d{1,2}):(\d{2}):(\d{2})']
         for pattern in patterns:
             match = re.match(pattern, date_string, re.IGNORECASE)
             if match:
@@ -219,26 +230,30 @@ class NuPix(Pix):
         
 class InterPix(Pix):
     
-    def __init__(self,lines):
+    def __init__(self, lines):
         super().__init__()
         from_, to_, value, id, id_aux, date, date_aux = self.get_data(lines)
 
         self.from_ = self.set_from(from_)
         self.to_ = self.set_to(to_)
         self.value = self.set_value(value)
-        self.id_ = self.set_id(id,id_aux)
-        self.date_ = self.set_date(date,date_aux)
+        self.id_ = self.set_id(id, id_aux)
+        self.date_ = self.set_date(date, date_aux)
         self.bank_ = 'Inter'
 
         self.include_date = datetime.now()
+        
+        # Set reference year and month from the transaction date
+        self.reference_year = self.date_.year
+        self.reference_month = self.date_.month
 
-    def set_id(self,id_,id_2):
-        aux = id_.replace('ID da transação','').strip()
+    def set_id(self, id_, id_2):
+        aux = id_.replace('ID da transação', '').strip()
         if aux == '':
-            aux = id_2.replace('ID da transação','').strip()
+            aux = id_2.replace('ID da transação', '').strip()
         return aux
 
-    def set_date(self,date_date,date_hour):
+    def set_date(self, date_date, date_hour):
         
         # Pattern: Data do pagamento Sexta, 02/01/2026
         pattern = r'\d{1,2}[/\-]\d{1,2}[/\-]\d{4}'
@@ -249,7 +264,6 @@ class InterPix(Pix):
         pattern = r'\d{1,2}[:h]\d{2}'
         match = re.search(pattern, date_hour, re.IGNORECASE)
         hour = match.group() if match else '00:00'
-        hour = hour.replace('h',':') #Caso padrão seja 00h00 susbtituir
+        hour = hour.replace('h', ':')  # Caso padrão seja 00h00 substituir
         date_hour = date + ' ' + hour
         return datetime.strptime(date_hour, '%d/%m/%Y %H:%M')
-    
