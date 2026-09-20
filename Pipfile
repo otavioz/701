@@ -15,6 +15,9 @@ python-telegram-bot = "*"
 opencv-python = "*"
 pytz = "*"
 telegram = "*"
+tinydb = "*"
+pytesseract = "*"
+pillow = "*"
 
 [dev-packages]
 
