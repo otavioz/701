@@ -8,7 +8,7 @@ import re
 from typing import Dict
 from bs4 import BeautifulSoup as BS
 
-from consts import PRODUCT_DIR, UNDEFINED, USERS_DIR
+from consts import PRODUCT_DIR
 from src.utils import get_users
 
 #PRODUCTS_FILEHEADER = 'product_name;code;quantity;unity;price;date;shop;owner;datetime'

@@ -162,7 +162,12 @@ class AP701Bot:
             #
             #await photo_file.download_to_drive(temp_path)
             await self.receipt.read_image(update) #,temp_path)
-            
+        except DuplicatedValue as e:
+            self.logger.error(f"Transferência duplicada: {e}")
+            await update.message.reply_text(f'A transação informada, de ID {e}, já foi inserida na base!')
+        except FileNotFoundError as e:
+            self.logger.error(f"Aquivo não encontrado: {e.filename}")
+            await update.message.reply_text(f'Houve um erro na busca por autores válidos para solicitação, consulte um administrador.\n Arquivo {e.filename} ausente')
         except Exception as e:
             self.logger.error(f"Error processing photo: {e}")
             await update.message.reply_text("❌ Houve um erro durante o processamento da sua imagem, tente novamente.")
@@ -201,6 +206,8 @@ class AP701Bot:
             await update.message.reply_text("Usuário {} adicionado a lista de usuários permitidos!".format(user_id))
         except ValueError:
             await update.message.reply_text("Certifique-se se enviar o ID do usuário!\n _{}_ Não é um ID válido.".format(user_id))
+        except FileNotFoundError:
+            await update.message.reply_text("Não há lista de usuários com permissão para uso da aplicação.")
 
     #@restricted
     async def handle_product_click(self, update: Update, context: ContextTypes.DEFAULT_TYPE):

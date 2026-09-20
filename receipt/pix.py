@@ -16,7 +16,7 @@ class Pix():
                  bank_: str = 'N/I', correction_: bool = False,
                  reference_year: Optional[int] = None, 
                  reference_month: Optional[int] = None,
-                 doc_id:Optional[int] = None):
+                 doc_id:Optional[int] = 0):
         self.from_ = from_
         self.to_ = to_
         self.value = float(value) if value is not None else 0.0
@@ -199,6 +199,9 @@ class NuPix(Pix):
         self.reference_year = self.date_.year
         self.reference_month = self.date_.month
 
+         #On reading attrs
+        self.doc_id = 0
+
     def set_id(self, id_, id_2):
         aux = id_.replace('ID da transação:', '').strip()
         if aux == '':
@@ -246,6 +249,9 @@ class InterPix(Pix):
         # Set reference year and month from the transaction date
         self.reference_year = self.date_.year
         self.reference_month = self.date_.month
+
+        #On reading attrs
+        self.doc_id = 0
 
     def set_id(self, id_, id_2):
         aux = id_.replace('ID da transação', '').strip()

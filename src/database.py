@@ -190,7 +190,7 @@ class DatabaseManager:
         Returns:
             True if update was successful, False otherwise
         """
-        return self.pix_table.update(pix.to_dict(), doc_ids=[doc_id]) > 0
+        return self.pix_table.update(pix.to_dict(), doc_ids=[doc_id])
     
     def delete_pix(self, doc_id: int) -> bool:
         """

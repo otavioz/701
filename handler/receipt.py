@@ -85,11 +85,9 @@ class ReceiptBot:
     async def read_transaction(self,update,temp_path,receipt: Pix):
         user_id = update.message.from_user.id
 
-        #receipt.save()
-        self.user_sessions[user_id]['pix'] = receipt
-        
+                
         message_text = (
-            '💲 *Comprovante de Transferência/Pagamento:*\n\n'
+            '💲 *Comprovante Salvo!*\n\n'
             f'Valor de: R$ {receipt.value:.2f}\n'
             f'De: {receipt.from_} \n'
             f'Para: {receipt.to_}\n'
@@ -98,11 +96,15 @@ class ReceiptBot:
         self.user_sessions[user_id]['text'] = message_text
         # Add action buttons
         keyboard = [[
-            InlineKeyboardButton("📝 Salvar", callback_data="save_pix"),
+            #InlineKeyboardButton("📝 Finalizar", callback_data="save_pix"),
             InlineKeyboardButton("❌ Tem algo errado", callback_data="adjust_pix")
         ]]
         
         reply_markup = InlineKeyboardMarkup(keyboard)
+
+        #Save PIX
+        receipt.doc_id = self.db.create_pix(receipt)
+        self.user_sessions[user_id]['pix'] = receipt
 
         #os.unlink(temp_path)
         await update.message.reply_text(message_text,
@@ -191,9 +193,8 @@ class ReceiptBot:
             if user_id in self.user_sessions:
                 del self.user_sessions[user_id]
             pix.correction()
-            #pix.save()
-            self.db.create_pix(pix)
-            await query.edit_message_text("Foi inserido um aviso para validação manual dos dados.")
+            self.db.update_pix_object(pix.doc_id,pix)
+            await query.edit_message_text("Feito! Operação foi marcada para revisão manual.")
 
 
     async def clean_file(self, update: Update, user_id: int, data):

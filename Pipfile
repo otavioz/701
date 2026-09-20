@@ -18,6 +18,7 @@ telegram = "*"
 tinydb = "*"
 pytesseract = "*"
 pillow = "*"
+seleniumbase = "*"
 
 [dev-packages]
 

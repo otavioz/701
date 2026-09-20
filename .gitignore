@@ -1,9 +1,10 @@
 .env
+.vscode/
 downloads/
 logs/
 data/
 tests/
-tests.py
+test.py
 **/__pycache__/
 Pipfile.lock
 Pipfile

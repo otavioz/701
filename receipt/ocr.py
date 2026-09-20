@@ -21,10 +21,14 @@ class TesseractOCR:
         # Use Tesseract to do OCR on the image
         text = pytesseract.image_to_string(img, lang='por')
         if save_raw:
-            #image_path_o = str(image_path).replace('jpeg','txt')
-            image_path_o = r'downloads\image_to_string.txt'
-            with open(image_path_o,'w',encoding='utf-8') as f:
-                f.write(text)
+            filename = str(image_path).replace('jpeg','txt')
+            output_dir = Path("donwloads")
+            html_path = output_dir / filename
+            html_path.write_text(
+                text,
+                encoding="utf-8"
+            )
+
         match Pix.which_bank(text):
             case 1:
                 pix = NuPix(text.split('\n'))
