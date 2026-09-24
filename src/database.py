@@ -228,15 +228,7 @@ class DatabaseManager:
     # ==================== PRODUCT CRUD OPERATIONS ====================
     
     def create_product(self, product: Product) -> int:
-        """
-        Create a new Product.
-        
-        Args:
-            product: Product object to insert
-        
-        Returns:
-            Document ID of the inserted Product
-        """
+
         # Check if product with same code already exists
         #if self.products_table.contains(self.ProductQuery.code == product.code):
         #    raise ValueError(f"Product with code {product.code} already exists")
@@ -245,102 +237,33 @@ class DatabaseManager:
         return doc_id
     
     def create_product_from_dict(self, data: Dict) -> int:
-        """
-        Create a new Product from dictionary.
-        
-        Args:
-            data: Dictionary containing Product data
-        
-        Returns:
-            Document ID of the inserted Product
-        """
         product = Product.from_dict(data)
         return self.create_product(product)
     
     def get_product(self, doc_id: int) -> Optional[Product]:
-        """
-        Get a Product by document ID.
-        
-        Args:
-            doc_id: Document ID
-        
-        Returns:
-            Product object or None if not found
-        """
         data = self.products_table.get(doc_id=doc_id)
         if data:
             return Product.from_dict(data)
         return None
     
-    def get_product_by_code(self, code: str) -> Optional[Product]:
-        """
-        Get a Product by its code.
-        
-        Args:
-            code: Product code
-        
-        Returns:
-            Product object or None if not found
-        """
-        data = self.products_table.get(self.ProductQuery.code == code)
-        if data:
-            return Product.from_dict(data)
-        return None
-    
-    def get_products_by_name(self, name: str) -> List[Product]:
-        """
-        Get all products with a specific name (partial match).
-        
-        Args:
-            name: Product name to search for
-        
-        Returns:
-            List of Product objects
-        """
-        results = self.products_table.search(
-            self.ProductQuery.product_name.matches(f'.*{name}.*')
-        )
+    def get_product_by_status(self, status: int) -> Optional[Product]:
+
+        results = self.products_table.search(self.ProductQuery.status == status)
         return [Product.from_dict(data) for data in results]
     
+    
     def get_products_by_owner(self, owner: str) -> List[Product]:
-        """
-        Get all products owned by a specific person.
-        
-        Args:
-            owner: Owner name
-        
-        Returns:
-            List of Product objects
-        """
+
         results = self.products_table.search(self.ProductQuery.owner == owner)
         return [Product.from_dict(data) for data in results]
     
-    def get_products_by_shop(self, shop: str) -> List[Product]:
-        """
-        Get all products from a specific shop.
-        
-        Args:
-            shop: Shop name
-        
-        Returns:
-            List of Product objects
-        """
-        results = self.products_table.search(self.ProductQuery.shop == shop)
-        return [Product.from_dict(data) for data in results]
-    
-    def get_products_by_price_range(self, min_price: float, max_price: float) -> List[Product]:
-        """
-        Get products within a price range.
-        
-        Args:
-            min_price: Minimum price
-            max_price: Maximum price
-        
-        Returns:
-            List of Product objects
-        """
+    def get_products_by_date_range(self, init_date: datetime, final_date: datetime = None) -> List[Product]:
+
+        if not final_date:
+            final_date = datetime.now()
+
         results = self.products_table.search(
-            (self.ProductQuery.price >= min_price) & (self.ProductQuery.price <= max_price)
+            (self.ProductQuery.created_at >= init_date) & (self.ProductQuery.created_at <= final_date)
         )
         return [Product.from_dict(data) for data in results]
     

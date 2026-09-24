@@ -125,13 +125,31 @@ class ReceiptBot:
         qr_url = valid_qr['data']
         domain = urlparse(qr_url).netloc
         await update.message.reply_text(f"🌐 Recibo encontrado: [{domain}]({qr_url})\n\nAnalisando items...",parse_mode='Markdown')
-        
-        # Scrape receipt items
-        items = WebScraper().scrape_receipt_items(qr_url, user_id)
-        
-        if not items:
+
+        webscrapper = WebScraper()
+
+        # Get URL Datakey
+        url_datakey = webscrapper.get_datakey(qr_url)
+        if not url_datakey:
+            await update.message.reply_text("Serviço da Receita Federal indisponível, tente novamente mais tarde!")
+            return
+
+        #Get Captcha Token
+        token = webscrapper.get_captcha_token(qr_url,url_datakey)
+        if not token:
+            await update.message.reply_text("Serviço de CAPTCHA indisponível, tente mais tarde!")
+            return
+
+        #Scrape webiste
+        page = webscrapper.get_page_with_token(qr_url, token)
+        if not page:
             await update.message.reply_text("❌ Não foi possivel encontrar items em seu recibo, tente novamente mais tarde.")
-            #os.unlink(temp_path)
+            return
+
+        #Get items from the page
+        items = webscrapper.scrap_items(page, user_id)
+        if not items:
+            await update.message.reply_text("Erro na leitura dos items do recibo, tente novamente mais tarde.")
             return
         
         # Store items in user session
@@ -381,7 +399,7 @@ class ReceiptBot:
             items = {}
             messsage = '📈 *Resumo das Últimas Compras:*\n\n'
             total = 0
-            for pdt in Product.load_products():
+            for pdt in self.db.get_all_products():
                 date = pdt.date.strftime("%d/%m")
                 owner = pdt.owner
                 if not date in items: items[date] = {}
