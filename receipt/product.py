@@ -13,7 +13,8 @@ PRODUCTS_FILEHEADER = 'product_name;price;owner;date;code;quantity;unity;shop;da
 class Product():
     def __init__(self, product_name, quantity, unity, price, owner, shop, 
                  code=None, date=None, formatted=False,
-                 reference_year=None, reference_month=None,doc_id=None,status=0):
+                 reference_year=None, reference_month=None,doc_id=None,status=0,
+                 access_key=None):
         
         #Basics attrs
         self.formatted = formatted
@@ -24,6 +25,7 @@ class Product():
         self.price = self._set_amount(price)
         self.owner = self._set_owner(owner)
         self.shop = shop
+        self.access_key = access_key
         self.date = self._set_date(date)
         self.created_at = datetime.now()
         self.status = status
@@ -128,6 +130,7 @@ class Product():
             'price': self.price,
             'owner': self.owner,
             'shop': self.shop,
+            'access_key': self.access_key,
             'date': self.date.isoformat(),
             'created_at': self.created_at.isoformat(),
             'reference_year': self.reference_year,
@@ -146,6 +149,7 @@ class Product():
             price=data['price'],
             owner=data['owner'],
             shop=data['shop'],
+            access_key=data.get('access_key'),
             date=datetime.fromisoformat(data['date']) if isinstance(data['date'], str) else data['date'],
             formatted=data['formatted'],
             reference_year=data.get('reference_year'),

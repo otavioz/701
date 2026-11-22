@@ -244,7 +244,7 @@ class DatabaseManager:
     def get_product(self, doc_id: int) -> Optional[Product]:
         data = self.products_table.get(doc_id=doc_id)
         if data:
-            return Product.from_dict(data)
+            return Product.from_dict(data, doc_id=data.doc_id)
         return None
     
     def get_product_by_status(self, status: int) -> Optional[Product]:
@@ -257,6 +257,15 @@ class DatabaseManager:
 
         results = self.products_table.search(self.ProductQuery.owner == owner)
         return [Product.from_dict(data) for data in results]
+
+    def get_products_by_access_key(self, access_key: str) -> List[Product]:
+        results = self.products_table.search(
+            self.ProductQuery.access_key == access_key
+        )
+        return [
+            Product.from_dict(data, doc_id=data.doc_id)
+            for data in results
+        ]
     
     def get_products_by_date_range(self, init_date: datetime, final_date: datetime = None) -> List[Product]:
 
@@ -273,16 +282,35 @@ class DatabaseManager:
         results = self.products_table.all()
         return [Product.from_dict(data, doc_id = data.doc_id) for data in results]
 
-    def create_month_closing(self, closing_date: datetime) -> int:
-        """Record a month closing date."""
-        return self.month_closings_table.insert({'date': closing_date.isoformat()})
+    def create_month_closing(
+        self,
+        closing_date: datetime,
+        total_products: float = 0.0,
+        total_transactions: float = 0.0,
+        total_by_residents: Optional[Dict[str, float]] = None,
+    ) -> int:
+        """Record the closing date and its monthly totals."""
+        return self.month_closings_table.insert({
+            'include_date': closing_date.isoformat(),
+            'reference_month': closing_date.month,
+            'total_products': total_products,
+            'total_transactions': total_transactions,
+            'total_by_residents': total_by_residents or {},
+        })
 
     def get_latest_month_closing(self, as_of: Optional[datetime] = None) -> Optional[datetime]:
         """Return the latest recorded month closing not later than ``as_of``."""
         as_of = as_of or datetime.now()
         closing_dates = []
         for record in self.month_closings_table.all():
-            closing_date = datetime.fromisoformat(record['date'])
+            date_value = record.get('include_date', record.get('date'))
+            if date_value is None:
+                self.logger.warning(
+                    "Ignoring month closing record without include_date: %s",
+                    record.doc_id,
+                )
+                continue
+            closing_date = datetime.fromisoformat(date_value)
             if closing_date.tzinfo is not None:
                 closing_date = closing_date.astimezone().replace(tzinfo=None)
             if closing_date <= as_of:
@@ -321,7 +349,16 @@ class DatabaseManager:
         Returns:
             True if update was successful, False otherwise
         """
-        return self.products_table.update(product.to_dict(), doc_ids=[doc_id]) > 0
+        return len(self.products_table.update(product.to_dict(), doc_ids=[doc_id])) > 0
+
+    def update_product_access_key(self, doc_id: int, access_key: Optional[str]) -> bool:
+        """Update a product's access key."""
+        return len(
+            self.products_table.update(
+                {'access_key': access_key},
+                doc_ids=[doc_id]
+            )
+        ) > 0
     
     def update_product_quantity(self, doc_id: int, new_quantity: int) -> bool:
         """

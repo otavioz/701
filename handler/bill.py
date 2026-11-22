@@ -153,7 +153,21 @@ class BillReceiptBot:
                 f"R$ {self._from_cents(amount_due):.2f}"
             )
 
-        self.db.create_month_closing(closing_date)
+        total_products = sum(
+            self._to_cents(product.price) for product in products
+        )
+        total_transactions = sum(
+            self._to_cents(pix.value) for pix in pix_transactions
+        )
+        self.db.create_month_closing(
+            closing_date=closing_date,
+            total_products=float(self._from_cents(total_products)),
+            total_transactions=float(self._from_cents(total_transactions)),
+            total_by_residents={
+                resident: float(self._from_cents(amounts_due[resident]))
+                for resident in residents
+            },
+        )
         return self._split_message(lines)
 
     @staticmethod

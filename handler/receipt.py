@@ -117,6 +117,10 @@ class ReceiptBot:
     async def read_receipt(self,update,qr_codes=None,url_link=None):
         user_id = update.message.from_user.id
 
+        if not qr_codes and not url_link:
+            await update.message.reply_text("URL ou QR Code não encontrado.")
+            return
+
         if qr_codes:
             # Get first QR code that's a URL
             valid_qr = next((qr for qr in qr_codes if qr['is_url']), None)

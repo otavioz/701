@@ -264,12 +264,20 @@ class WebScraper:
         if owner == '':
             owner = user_id
                         
-        # Find table with ID "myTable"
+        # Find table with key "collapseTwo" to get the ID
+        access_key = soup.find('div', {'id': 'collapseTwo'}).find('tbody').find_all('td')[1].get_text(strip=True)
+        if not access_key:
+            logger.error("Access key not found in the page source")
+            access_key = ''
+        access_key = access_key.replace('/', '').replace('-', '').replace('.', '')
+
+
+         # Find table with ID "myTable"
         table = soup.find('tbody', {'id': 'myTable'})
         if not table:
             logger.error("Table with ID 'myTable' not found")
             return []
-        
+
         items = []
         # Iterate through table rows
         for tr in table.find_all('tr'):
