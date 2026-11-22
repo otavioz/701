@@ -5,7 +5,7 @@ from datetime import datetime
 from decimal import Decimal, ROUND_HALF_UP
 from typing import Dict, List, Optional
 
-from consts import DATABASE
+from consts import DATABASE, HOUSE_ACCOUNT_OWNER
 from src.database import DatabaseManager
 from src.utils import get_users
 
@@ -110,18 +110,34 @@ class BillReceiptBot:
             raise ValueError("Não há usuários moradores (user_type 1) cadastrados.")
 
         amounts_due = {resident: 0 for resident in residents}
+        purchases_by_residents = {resident: 0 for resident in residents}
+        resident_names = {resident.casefold(): resident for resident in residents}
+        house_products = []
+        house_products_total = 0
+        total_products = 0
         for product in products:
             amount_cents = self._to_cents(product.price)
-            base_share, remainder = divmod(amount_cents, len(residents))
             owner = str(product.owner).strip().casefold()
-            for index, resident in enumerate(residents):
-                share = base_share + (index < remainder)
-                if owner != resident.strip().casefold():
-                    amounts_due[resident] += share
+            resident_owner = resident_names.get(owner)
+            if resident_owner is None:
+                #house_products.append({
+                #    'product_name': product.product_name,
+                #    'owner': product.owner,
+                #    'value': float(self._from_cents(amount_cents)),
+                #})
+                house_products_total += amount_cents
+            else:
+                purchases_by_residents[resident_owner] += amount_cents
+            total_products += amount_cents
 
-        pix_paid: Dict[str, int] = defaultdict(int)
+
+        payments_by_residents: Dict[str, int] = defaultdict(int)
+        resident_names = {resident.casefold(): resident for resident in residents}
         for pix in pix_transactions:
-            pix_paid[str(pix.from_)] += self._to_cents(pix.value)
+            receiver = str(pix.to_).strip().casefold()
+            sender = resident_names.get(str(pix.from_).strip().casefold())
+            if receiver == HOUSE_ACCOUNT_OWNER.casefold() and sender is not None:
+                payments_by_residents[sender] += self._to_cents(pix.value)
 
         month_names = (
             "janeiro", "fevereiro", "março", "abril", "maio", "junho",
@@ -133,26 +149,54 @@ class BillReceiptBot:
             f"{month_names[reference_month - 1].capitalize()}/{reference_year}</b>",
         ]
         if recalculating is not None:
-            lines.append("<b>RECALCULO do mês já informado</b>")
+            lines.append("<i>Mês fechado, recalculo realizado.</i>\n")
         lines.extend([
+            "Luz: R$ 0.00",
+            "Internet: R$ 0.00",
+            "Condomínio: R$ 0.00",
+            "Limpeza: R$ 0.00",
+            "IPTU: R$ 0.00",
+            "Poupança: R$ 0.00",
+            "Total da casa: R$ 0.00",
+            "Total para cada: R$ 0.00",
+            "",
+            "<b>Compras</b>",
             f"Total de Compras: R$ "
-            f"{self._from_cents(sum(self._to_cents(product.price) for product in products)):.2f}",
+            f"{self._from_cents(total_products):.2f}",
         ])
 
         final_by_residents = {}
         for resident in residents:
-            amount_due = amounts_due[resident] - pix_paid.get(resident, 0)
+            lines.append(
+                f"Feitas por {html.escape(resident)}: "
+                f"R$ {self._from_cents(purchases_by_residents[resident]):.2f}"
+            )
+        lines.append(
+            f"Outros: R$ "
+            f"{self._from_cents(house_products_total):.2f}"
+        )
+
+        for resident in residents:
+            amount_due = total_products/len(residents) - purchases_by_residents.get(resident, 0)
             final_by_residents[resident] = amount_due
             lines.append(
-                f"Valor para {html.escape(resident)}: "
+                f"Valor a pagar por {html.escape(resident)}: "
                 f"R$ {self._from_cents(amount_due):.2f}"
+            )
+
+        lines.append("")
+        lines.append("<b>Pagamentos</b>")
+        for resident in residents:
+            lines.append(
+                f"{html.escape(resident)}: "
+                f"R$ {self._from_cents(payments_by_residents.get(resident, 0)):.2f}"
             )
 
         total_products = sum(
             self._to_cents(product.price) for product in products
         )
         total_transactions = sum(
-            self._to_cents(pix.value) for pix in pix_transactions
+            payments_by_residents.values()
         )
         self.db.create_month_closing(
             closing_date=datetime.now(),
@@ -162,6 +206,16 @@ class BillReceiptBot:
             total_transactions=float(self._from_cents(total_transactions)),
             total_by_residents={
                 resident: float(self._from_cents(final_by_residents[resident]))
+                for resident in residents
+            },
+            purchases_by_residents={
+                resident: float(self._from_cents(purchases_by_residents[resident]))
+                for resident in residents
+            },
+            #house_products=house_products,
+            house_products_total=float(self._from_cents(house_products_total)),
+            payments_by_residents={
+                resident: float(self._from_cents(payments_by_residents.get(resident, 0)))
                 for resident in residents
             },
         )

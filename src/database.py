@@ -290,15 +290,31 @@ class DatabaseManager:
         total_products: float = 0.0,
         total_transactions: float = 0.0,
         total_by_residents: Optional[Dict[str, float]] = None,
+        purchases_by_residents: Optional[Dict[str, float]] = None,
+        house_products: Optional[List[Dict]] = None,
+        house_products_total: float = 0.0,
+        payments_by_residents: Optional[Dict[str, float]] = None,
     ) -> bool:
         """Create or recalculate the closing for a reference month."""
         closing_data = {
             'include_date': closing_date.isoformat(),
             'reference_month': reference_month,
             'reference_year': reference_year,
+            'luz': 0.0,
+            'internet': 0.0,
+            'condominio': 0.0,
+            'limpeza': 0.0,
+            'iptu': 0.0,
+            'valor_poupanca': 0.0,
+            'total_house': 0.0,
+            'total_per_resident': 0.0,
             'total_products': total_products,
             'total_transactions': total_transactions,
             'total_by_residents': total_by_residents or {},
+            'purchases_by_residents': purchases_by_residents or {},
+            'house_products': house_products or [],
+            'house_products_total': house_products_total,
+            'payments_by_residents': payments_by_residents or {},
         }
         existing = self.get_month_closing(reference_month, reference_year)
         if existing is not None:
