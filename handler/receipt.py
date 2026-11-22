@@ -7,7 +7,7 @@ from urllib.parse import urlparse
 # Third-party imports
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 
-from consts import PRODUCT_DIR, UNDEFINED, DATABASE
+from consts import PRODUCT_DIR, TRANSFERS_DIR, DATABASE
 from src.database import DatabaseManager
 from receipt.ocr import TesseractOCR
 from receipt.pix import Pix
@@ -387,7 +387,7 @@ class ReceiptBot:
         ]])
  
         try:
-            with open(PRODUCT_DIR, 'rb') as file:
+            with open(TRANSFERS_DIR, 'rb') as file:
                 await update.message.reply_document(
                     document=file,
                     reply_markup=reply_markup,
