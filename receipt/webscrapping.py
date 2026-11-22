@@ -3,6 +3,7 @@ import time
 from typing import List, Dict, Any
 from pathlib import Path
 import logging
+#from warnings import deprecated
 
 # Third-party imports
 from bs4 import BeautifulSoup
@@ -53,7 +54,8 @@ class WebScraper:
             
             # Wait a moment for the page elements to load
             time.sleep(5)
-            
+
+            logger.info(f"Executing Turnstile script to {target_url}...")
             self.driver.execute_script(f"""
                 // Locate the Turnstile response textareas (Cloudflare creates these automatically)
                 var inputElements = document.getElementsByName('cf-turnstile-response');
@@ -63,16 +65,18 @@ class WebScraper:
                     console.error('Turnstile container input field not found.');
                 }}
             """)
-            
+
+            logger.info(f"Executing Turnstile script to {target_url}...")
             # Fire native event callbacks (Many frameworks rely on this to activate the submit button)
-            logger.driver.execute_script("""
+            self.driver.execute_script("""
                 var inputElements = document.getElementsByName('cf-turnstile-response');
                 if (inputElements.length > 0) {
                     var event = new Event('change', { bubbles: true });
                     inputElements[0].dispatchEvent(event);
                 }
             """)
-            
+
+            logger.info(f"Clicking submit button on {target_url}...")
             # Handle Submission via the <a> element
             button_xpath = "//a[contains(@class, 'btn') and contains(@class, 'btn-primary') and contains(@class, 'center-block')]"
             
@@ -141,7 +145,7 @@ class WebScraper:
             print("Error: Could not connect to the service. Is it running?")
 
         
-    @DeprecationWarning
+    @DeprecationWarning #deprecated("Use get_page_with_token() instead")
     def scrape_receipt_items(self, target_url: str, user_id=None) -> List[Dict[str, str]]:
         try:
             with SB(uc=True, xvfb=True, test=True) as sb:
@@ -182,7 +186,7 @@ class WebScraper:
             logger.error(f"Scraping error: {e}")
             return []
 
-    @DeprecationWarning
+    @DeprecationWarning #@deprecated("Use get_page_with_token() instead")
     def scrape_receipt_items_old(self, url: str, user_id=None) -> List[Dict[str, str]]:
         """Scrape receipt items from website with table ID 'myTable'"""
         try:

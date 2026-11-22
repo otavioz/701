@@ -2,21 +2,18 @@
 Main Telegram bot for receipt processing
 """
 from functools import wraps
-import os
-import tempfile
 import logging
-import traceback
-from typing import Dict, List, Any
-from datetime import timedelta, datetime, timezone
+from datetime import datetime, timedelta, timezone
 from telegram.constants import ParseMode
 
-from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
+from telegram import MessageEntity, Update
 from telegram.ext import (
     Application, CommandHandler, MessageHandler, 
     CallbackQueryHandler, ContextTypes, filters, Defaults
 )
 from src.exceptions import DuplicatedValue
 from src.config import get_permitted_users, set_permitted_user
+from handler.bill import BillReceiptBot, MonthClosingNotFound
 from handler.receipt import ReceiptBot
 
 #https://core.telegram.org/bots/api#formatting-options
@@ -41,6 +38,7 @@ class AP701Bot:
         # Setup handlers
         self._setup_handlers()
         self.receipt = ReceiptBot()
+        self.bill = BillReceiptBot(self.receipt.db)
         
         # Add error handler
         self.application.add_error_handler(self.error_handler)
@@ -57,6 +55,7 @@ class AP701Bot:
             CommandHandler("drecibos", self._safe_handler(self.download_receipts)),
             CommandHandler("resumocompras", self._safe_handler(self.products_sumup)),
             CommandHandler("bills", self._safe_handler(self.monthly_bills)),
+            CommandHandler("fechamento", self._safe_handler(self.monthly_closing)),
             CommandHandler("add", self._safe_handler(self.add_user)),
             MessageHandler(filters.PHOTO, self._safe_handler(self.handle_photo)),
             #MessageHandler(filters.Document.IMAGE, self._safe_handler(self.handle_document_image)),
@@ -66,6 +65,8 @@ class AP701Bot:
             CallbackQueryHandler(
                 self._safe_handler(self.handle_product_file), 
                 pattern="^(clean_file|keep_)"),
+            #MessageHandler(filters.Regex(r"pattern"),self._safe_handler(self.url)),
+            MessageHandler(filters.Entity(MessageEntity.URL) | filters.Entity(MessageEntity.TEXT_LINK) ,self._safe_handler(self.url)),
             MessageHandler(filters.TEXT & ~filters.COMMAND, self.echo)
         ]
         
@@ -144,9 +145,40 @@ class AP701Bot:
 
     #@restricted
     async def monthly_bills(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
-        text = f"🚧 Ainda em Construção 🚧"
+        try:
+            messages = self.bill.monthly_summary()
+        except MonthClosingNotFound as error:
+            await update.effective_message.reply_text(str(error))
+            return
 
-        await update.message.reply_text(text, parse_mode='Markdown')
+        for message in messages:
+            await update.effective_message.reply_text(message)
+
+    async def monthly_closing(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
+        if len(context.args) > 1:
+            await update.effective_message.reply_text(
+                "Uso: /fechamento [AAAA-MM-DD ou AAAA-MM-DDTHH:MM:SS]"
+            )
+            return
+
+        try:
+            closing_date = (
+                datetime.fromisoformat(context.args[0])
+                if context.args
+                else datetime.now()
+            )
+            if closing_date.tzinfo is not None:
+                closing_date = closing_date.astimezone().replace(tzinfo=None)
+            messages = self.bill.close_month(closing_date)
+        except ValueError as error:
+            await update.effective_message.reply_text(
+                f"Data de fechamento inválida: {error}\n"
+                "Uso: /fechamento [AAAA-MM-DD ou AAAA-MM-DDTHH:MM:SS]"
+            )
+            return
+
+        for message in messages:
+            await update.effective_message.reply_text(message)
 
     #@restricted
     async def handle_photo(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -251,11 +283,29 @@ class AP701Bot:
         /resumocompras:
             Lista um resumo das ultimas compras feitas, contendo *Data*, *Autor* e *Valor Total*\.
 
-        /bills: \[🚧 Breve 🚧\]
-            Lista os valores das contas da casa, bem como o saldo em conta da casa e dos moradores\.
+        /bills:
+            Lista os produtos incluídos desde o último fechamento, agrupados por responsável, e os PIX\.
+
+        /fechamento \[AAAA\-MM\-DD ou AAAA\-MM\-DDTHH:MM:SS\]:
+            Exibe o rateio dos produtos e os PIX pagos por pessoa, depois registra o fechamento\.
             
         """
         await update.message.reply_text(help_text, parse_mode='MarkdownV2')
+
+    async def url(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
+        entities = update.message.parse_entities([MessageEntity.URL, MessageEntity.TEXT_LINK])
+
+        urls = [
+            entity.url if entity.type == MessageEntity.TEXT_LINK else text
+            for entity, text in entities.items()
+        ]
+
+        for url in urls:
+            if 'portalsped.fazenda' in url:
+                #await update.message.reply_text(f"Recebi o link do QRCode: {url}\nVou tentar extrair os dados da compra...")
+                await self.receipt.read_url(update, url)
+        #await update.message.reply_text(f"Found URLs: {', '.join(urls)}")
+
     
     def _log_user_interaction(self, update: Update):
         """Log user interactions"""

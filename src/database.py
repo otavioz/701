@@ -24,6 +24,7 @@ class DatabaseManager:
         self.db = TinyDB(db_path)
         self.pix_table = self.db.table('pix')
         self.products_table = self.db.table('products')
+        self.month_closings_table = self.db.table('month_closings')
         self.PixQuery = Query()
         self.ProductQuery = Query()
 
@@ -271,7 +272,23 @@ class DatabaseManager:
         """Get all products."""
         results = self.products_table.all()
         return [Product.from_dict(data, doc_id = data.doc_id) for data in results]
-    
+
+    def create_month_closing(self, closing_date: datetime) -> int:
+        """Record a month closing date."""
+        return self.month_closings_table.insert({'date': closing_date.isoformat()})
+
+    def get_latest_month_closing(self, as_of: Optional[datetime] = None) -> Optional[datetime]:
+        """Return the latest recorded month closing not later than ``as_of``."""
+        as_of = as_of or datetime.now()
+        closing_dates = []
+        for record in self.month_closings_table.all():
+            closing_date = datetime.fromisoformat(record['date'])
+            if closing_date.tzinfo is not None:
+                closing_date = closing_date.astimezone().replace(tzinfo=None)
+            if closing_date <= as_of:
+                closing_dates.append(closing_date)
+        return max(closing_dates) if closing_dates else None
+
     def update_product(self, doc_id: int, update_data: Dict) -> bool:
         """
         Update a Product.

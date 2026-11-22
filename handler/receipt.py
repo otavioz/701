@@ -49,7 +49,7 @@ class ReceiptBot:
             }
             
         if qr_codes:
-            await self.read_receipt(update,temp_path,qr_codes)
+            await self.read_receipt(update,qr_codes)
             os.unlink(temp_path)
             return
         
@@ -81,11 +81,14 @@ class ReceiptBot:
         #os.unlink(temp_path)
         await update.message.reply_text(message_text, parse_mode='Markdown', reply_markup=reply_markup)
 
+    async def read_url(self,update,qr_url):
+        user_id = update.message.from_user.id
+        await self.read_receipt(update,url_link=qr_url)
+
     
     async def read_transaction(self,update,temp_path,receipt: Pix):
         user_id = update.message.from_user.id
 
-                
         message_text = (
             '💲 *Comprovante Salvo!*\n\n'
             f'Valor de: R$ {receipt.value:.2f}\n'
@@ -111,37 +114,36 @@ class ReceiptBot:
                                          parse_mode='Markdown',
                                          reply_markup=reply_markup)
 
-
-    async def read_receipt(self,update,temp_path,qr_codes):
+    async def read_receipt(self,update,qr_codes=None,url_link=None):
         user_id = update.message.from_user.id
+
+        if qr_codes:
+            # Get first QR code that's a URL
+            valid_qr = next((qr for qr in qr_codes if qr['is_url']), None)
+            if not valid_qr:
+                await update.message.reply_text("❌ Não há uma URL válida no QR Code enontrado.")
+                return
+            url_link = valid_qr['data']
         
-        # Get first QR code that's a URL
-        valid_qr = next((qr for qr in qr_codes if qr['is_url']), None)
-        if not valid_qr:
-            await update.message.reply_text("❌ Não há uma URL válida no QR Code enontrado.")
-            #os.unlink(temp_path)
-            return
-        
-        qr_url = valid_qr['data']
-        domain = urlparse(qr_url).netloc
-        await update.message.reply_text(f"🌐 Recibo encontrado: [{domain}]({qr_url})\n\nAnalisando items...",parse_mode='Markdown')
+        domain = urlparse(url_link).netloc
+        await update.message.reply_text(f"🌐 Recibo encontrado: [{domain}]({url_link})\n\nAnalisando items...",parse_mode='Markdown')
 
         webscrapper = WebScraper()
 
         # Get URL Datakey
-        url_datakey = webscrapper.get_datakey(qr_url)
+        url_datakey = webscrapper.get_datakey(url_link)
         if not url_datakey:
             await update.message.reply_text("Serviço da Receita Federal indisponível, tente novamente mais tarde!")
             return
 
         #Get Captcha Token
-        token = webscrapper.get_captcha_token(qr_url,url_datakey)
+        token = webscrapper.get_captcha_token(url_link,url_datakey)
         if not token:
             await update.message.reply_text("Serviço de CAPTCHA indisponível, tente mais tarde!")
             return
 
         #Scrape webiste
-        page = webscrapper.get_page_with_token(qr_url, token)
+        page = webscrapper.get_page_with_token(url_link, token)
         if not page:
             await update.message.reply_text("❌ Não foi possivel encontrar items em seu recibo, tente novamente mais tarde.")
             return
@@ -159,7 +161,6 @@ class ReceiptBot:
         }
 
         # Send items for selection
-        #os.unlink(temp_path)
         await self.send_item_selection(update, user_id, items)
     
     async def select_items(self, update: Update, user_id: int, data):
@@ -321,7 +322,7 @@ class ReceiptBot:
                 txt_content += f"*Total*: R$ {total:.2f}"
             
             # Save items on csv
-            Product.save_products(selected_items)
+            #Product.save_products(selected_items)
             for product in selected_items:
                 self.db.create_product(product)
 

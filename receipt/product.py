@@ -5,7 +5,7 @@ import re
 from typing import Dict
 
 from consts import PRODUCT_DIR
-from src.utils import get_users
+from src.utils import add_unknown_user, find_user_name, get_users
 
 #PRODUCTS_FILEHEADER = 'product_name;code;quantity;unity;price;date;shop;owner;datetime'
 PRODUCTS_FILEHEADER = 'product_name;price;owner;date;code;quantity;unity;shop;datetime;reference_year;reference_month;status'
@@ -101,16 +101,14 @@ class Product():
     def _set_owner(self, owner):
         if self.formatted:
             return owner
-        
-        owner_aux = None
+
+        owner_name = str(owner).strip() if owner is not None else ''
+
         users = get_users()
-        for key, value in users.items():
-            if owner in value:
-                owner_aux = key
-                break
-        if not owner_aux:
-            return f'(NOVO){owner}'
-        return owner_aux.strip()
+        owner_aux = find_user_name(owner_name, users)
+        if owner_aux:
+            return owner_aux.strip()
+        return add_unknown_user(owner_name, users)
     
     def _set_date(self, date):
         if type(date) == str:

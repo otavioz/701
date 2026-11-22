@@ -1,15 +1,61 @@
 from collections import deque
 import json
-from consts import USERS_DIR
+from typing import Any, Dict, List, Optional
+
 from PIL import Image
 
+from consts import USERS_DIR
 
 
-def get_users():
+def get_users() -> List[Dict[str, Any]]:
     with open(USERS_DIR, 'r', encoding='utf-8') as f:
-        # Use json.load() to convert JSON data into a Python list
-        data_list = json.load(f)
-    return data_list
+        users = json.load(f)
+
+    if not isinstance(users, list):
+        raise ValueError(f"Expected a list of users in {USERS_DIR}")
+    for user in users:
+        if (
+            not isinstance(user, dict)
+            or not isinstance(user.get('nome'), str)
+            or not isinstance(user.get('alias'), list)
+            or any(not isinstance(alias, str) for alias in user.get('alias', []))
+            or type(user.get('user_type')) is not int
+            or user['user_type'] not in (0, 1)
+        ):
+            raise ValueError(f"Invalid user record in {USERS_DIR}: {user!r}")
+    return users
+
+
+def find_user_name(alias: str, users: Optional[List[Dict[str, Any]]] = None) -> Optional[str]:
+    normalized_alias = alias.strip().casefold()
+    if not normalized_alias:
+        return None
+
+    for user in users if users is not None else get_users():
+        names = [user['nome'], *user['alias']]
+        if any(
+            normalized_alias == name.strip().casefold()
+            or normalized_alias in name.strip().casefold()
+            for name in names
+            if isinstance(name, str)
+        ):
+            return user['nome']
+    return None
+
+
+def add_unknown_user(name: str, users: List[Dict[str, Any]] = None) -> str:
+    name = name.strip()
+    if not name:
+        raise ValueError("A user's name cannot be empty.")
+
+    if not users:
+        users = get_users()
+
+    users.append({'nome': name, 'alias': [], 'user_type': 0})
+    with open(USERS_DIR, 'w', encoding='utf-8') as f:
+        json.dump(users, f, ensure_ascii=False, indent=4)
+        f.write('\n')
+    return name
 
 def save_img_bkp(path,user_id):
     img = Image.open(path)

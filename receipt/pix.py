@@ -6,7 +6,7 @@ from typing import Dict, Optional
 import uuid
 
 from consts import MONTH_MAP, TRANSFERS_DIR
-from src.utils import get_users
+from src.utils import find_user_name, get_users
 FILEHEADER = 'from;to;value;institution;code;date;include_date;fix;reference_year;reference_month'
 
 class Pix():
@@ -83,22 +83,14 @@ class Pix():
         aux = from_.replace('Nome', '').strip()
         aux = aux.replace('Pagador', '').strip()
         users = get_users()
-        for key, value in users.items():
-            if aux in value:
-                aux = key
-                break
-        return aux
+        return find_user_name(aux, users) or aux
     
     def set_to(self, to_):
         aux = to_.replace('Nome', '').strip()
         aux = aux.replace('Favorecido', '').strip()
         aux = aux.replace('Favoreci', '').strip()
         users = get_users()
-        for key, value in users.items():
-            if aux in value:
-                aux = key
-                break
-        return aux
+        return find_user_name(aux, users) or aux
 
     def set_value(self, value_str):
         # Remove R$ symbol and any whitespace
