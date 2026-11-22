@@ -1,4 +1,5 @@
 import html
+import calendar
 from collections import defaultdict
 from datetime import datetime
 from decimal import Decimal, ROUND_HALF_UP
@@ -16,13 +17,6 @@ class MonthClosingNotFound(ValueError):
 class BillReceiptBot:
     def __init__(self, db: Optional[DatabaseManager] = None):
         self.db = db or DatabaseManager(DATABASE)
-
-    def record_month_closing(self, closing_date: Optional[datetime] = None) -> datetime:
-        closing_date = closing_date or datetime.now()
-        if closing_date > datetime.now():
-            raise ValueError("A data de fechamento não pode estar no futuro.")
-        self.db.create_month_closing(closing_date)
-        return closing_date
 
     def monthly_summary(self, now: Optional[datetime] = None) -> List[str]:
         now = now or datetime.now()
@@ -86,33 +80,26 @@ class BillReceiptBot:
 
         return self._split_message(lines)
 
-    def close_month(self, closing_date: Optional[datetime] = None) -> List[str]:
-        closing_date = closing_date or datetime.now()
-        if closing_date > datetime.now():
-            raise ValueError("A data de fechamento não pode estar no futuro.")
+    def close_month(self, reference_month: int, reference_year: int) -> List[str]:
+        if not 1 <= reference_month <= 12:
+            raise ValueError("O mês deve estar entre 1 e 12.")
+        if reference_year < 1:
+            raise ValueError("O ano informado é inválido.")
 
-        previous_closing = self.db.get_latest_month_closing(closing_date)
-        if previous_closing is not None and closing_date <= previous_closing:
-            raise ValueError("A data deve ser posterior ao último fechamento.")
-        include_start = previous_closing is None
-        if previous_closing is None:
-            previous_closing = closing_date.replace(
-                day=1, hour=0, minute=0, second=0, microsecond=0
-            )
-
+        period_start = datetime(reference_year, reference_month, 1)
+        period_end = datetime(
+            reference_year,
+            reference_month,
+            calendar.monthrange(reference_year, reference_month)[1],
+            23, 59, 59, 999999,
+        )
         products = [
             product for product in self.db.get_all_products()
-            if (
-                previous_closing <= product.created_at
-                if include_start else previous_closing < product.created_at
-            ) and product.created_at <= closing_date
+            if period_start <= product.date <= period_end
         ]
         pix_transactions = [
             pix for pix in self.db.get_all_pix()
-            if (
-                previous_closing <= pix.include_date
-                if include_start else previous_closing < pix.include_date
-            ) and pix.include_date <= closing_date
+            if period_start <= pix.date_ <= period_end
         ]
 
         residents = [
@@ -140,14 +127,22 @@ class BillReceiptBot:
             "janeiro", "fevereiro", "março", "abril", "maio", "junho",
             "julho", "agosto", "setembro", "outubro", "novembro", "dezembro",
         )
+        recalculating = self.db.get_month_closing(reference_month, reference_year)
         lines = [
-            f"<b>Fechamento do Mês de {month_names[closing_date.month - 1].capitalize()}</b>",
+            f"<b>Fechamento do Mês de "
+            f"{month_names[reference_month - 1].capitalize()}/{reference_year}</b>",
+        ]
+        if recalculating is not None:
+            lines.append("<b>RECALCULO do mês já informado</b>")
+        lines.extend([
             f"Total de Compras: R$ "
             f"{self._from_cents(sum(self._to_cents(product.price) for product in products)):.2f}",
-        ]
+        ])
 
+        final_by_residents = {}
         for resident in residents:
             amount_due = amounts_due[resident] - pix_paid.get(resident, 0)
+            final_by_residents[resident] = amount_due
             lines.append(
                 f"Valor para {html.escape(resident)}: "
                 f"R$ {self._from_cents(amount_due):.2f}"
@@ -160,11 +155,13 @@ class BillReceiptBot:
             self._to_cents(pix.value) for pix in pix_transactions
         )
         self.db.create_month_closing(
-            closing_date=closing_date,
+            closing_date=datetime.now(),
+            reference_month=reference_month,
+            reference_year=reference_year,
             total_products=float(self._from_cents(total_products)),
             total_transactions=float(self._from_cents(total_transactions)),
             total_by_residents={
-                resident: float(self._from_cents(amounts_due[resident]))
+                resident: float(self._from_cents(final_by_residents[resident]))
                 for resident in residents
             },
         )

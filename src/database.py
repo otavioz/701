@@ -285,18 +285,44 @@ class DatabaseManager:
     def create_month_closing(
         self,
         closing_date: datetime,
+        reference_month: int,
+        reference_year: int,
         total_products: float = 0.0,
         total_transactions: float = 0.0,
         total_by_residents: Optional[Dict[str, float]] = None,
-    ) -> int:
-        """Record the closing date and its monthly totals."""
-        return self.month_closings_table.insert({
+    ) -> bool:
+        """Create or recalculate the closing for a reference month."""
+        closing_data = {
             'include_date': closing_date.isoformat(),
-            'reference_month': closing_date.month,
+            'reference_month': reference_month,
+            'reference_year': reference_year,
             'total_products': total_products,
             'total_transactions': total_transactions,
             'total_by_residents': total_by_residents or {},
-        })
+        }
+        existing = self.get_month_closing(reference_month, reference_year)
+        if existing is not None:
+            return len(
+                self.month_closings_table.update(
+                    closing_data, doc_ids=[existing.doc_id]
+                )
+            ) > 0
+        self.month_closings_table.insert(closing_data)
+        return False
+
+    def get_month_closing(self, reference_month: int, reference_year: int):
+        """Find a closing by its reference month and year."""
+        for record in self.month_closings_table.all():
+            record_month = record.get('reference_month')
+            record_year = record.get('reference_year')
+            date_value = record.get('include_date', record.get('date'))
+            if date_value:
+                record_date = datetime.fromisoformat(date_value)
+                record_month = record_month or record_date.month
+                record_year = record_year or record_date.year
+            if record_month == reference_month and record_year == reference_year:
+                return record
+        return None
 
     def get_latest_month_closing(self, as_of: Optional[datetime] = None) -> Optional[datetime]:
         """Return the latest recorded month closing not later than ``as_of``."""

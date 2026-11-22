@@ -155,25 +155,23 @@ class AP701Bot:
             await update.effective_message.reply_text(message)
 
     async def monthly_closing(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
-        if len(context.args) > 1:
+        if len(context.args) != 1:
             await update.effective_message.reply_text(
-                "Uso: /fechamento [AAAA-MM-DD ou AAAA-MM-DDTHH:MM:SS]"
+                "Uso: /fechamento MM/AAAA (por exemplo, /fechamento 11/2026)"
             )
             return
 
         try:
-            closing_date = (
-                datetime.fromisoformat(context.args[0])
-                if context.args
-                else datetime.now()
-            )
-            if closing_date.tzinfo is not None:
-                closing_date = closing_date.astimezone().replace(tzinfo=None)
-            messages = self.bill.close_month(closing_date)
+            month_text, year_text = context.args[0].split("/")
+            if len(month_text) != 2 or len(year_text) != 4:
+                raise ValueError("Informe o mês e o ano no formato MM/AAAA.")
+            reference_month = int(month_text)
+            reference_year = int(year_text)
+            messages = self.bill.close_month(reference_month, reference_year)
         except ValueError as error:
             await update.effective_message.reply_text(
-                f"Data de fechamento inválida: {error}\n"
-                "Uso: /fechamento [AAAA-MM-DD ou AAAA-MM-DDTHH:MM:SS]"
+                f"Mês/ano inválido: {error}\n"
+                "Uso: /fechamento MM/AAAA (por exemplo, /fechamento 11/2026)"
             )
             return
 
@@ -286,8 +284,8 @@ class AP701Bot:
         /bills:
             Lista os produtos incluídos desde o último fechamento, agrupados por responsável, e os PIX\.
 
-        /fechamento \[AAAA\-MM\-DD ou AAAA\-MM\-DDTHH:MM:SS\]:
-            Exibe o rateio dos produtos e os PIX pagos por pessoa, depois registra o fechamento\.
+        /fechamento MM/AAAA:
+            Calcula o mês informado usando a data das compras e dos PIX; se já existir, recalcula\.
             
         """
         await update.message.reply_text(help_text, parse_mode='MarkdownV2')
