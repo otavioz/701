@@ -221,7 +221,9 @@ class ReceiptBot:
             self.user_sessions.remove(user_id)
             pix.correction()
             self.db.update_pix_object(pix.doc_id,pix)
-            await query.edit_message_text("Feito! Operação foi marcada para revisão manual.")
+            message = query.message.text + "\n\n<i>Operação marcada para revisão manual.</i>"
+            await query.edit_message_text(message)
+            #await query.edit_message_text("Feito! Operação foi marcada para revisão manual.")
 
 
     async def clean_file(self, update: Update, user_id: int, data):

@@ -93,8 +93,17 @@ class Pix():
         return find_user_name(aux, users) or aux
 
     def set_value(self, value_str):
+
         # Remove R$ symbol and any whitespace
+        match = re.search(r'R\$\s*\d+(?:\.\d{3})*,\d{2}', value_str)
+        if match:
+            value_str = match.group()
+
         cleaned = re.sub(r'R\$\s*', '', value_str.strip())
+
+        #Remove any non-numeric characters except for commas and periods
+        cleaned = re.sub(r'[^\d,\.]', '', cleaned)
+        #cleaned = cleaned.replace('Valor ', '')
         
         # Remove thousand separators (periods)
         cleaned = cleaned.replace('.', '')
@@ -102,12 +111,11 @@ class Pix():
         # Replace comma with dot for decimal separator
         cleaned = cleaned.replace(',', '.')
         
-        cleaned = cleaned.replace('Valor ', '')
-        # Convert to float
         try:
+            # Convert to float
             return float(cleaned)
         except ValueError:
-            raise ValueError(f"Cannot convert '{value_str}' to float")
+            raise ValueError(f"Cannot convert '{cleaned}' to float")
     
     def get_data(self, lines) -> list[str]:
         from_ = to_ = id = id_aux = date = date_aux = value_i = ''
