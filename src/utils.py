@@ -7,7 +7,12 @@ from PIL import Image
 from consts import USERS_DIR
 
 
-def get_users() -> List[Dict[str, Any]]:
+def get_users(user_type: Optional[int] = None) -> List[Dict[str, Any]]:
+    if user_type is not None and (
+        type(user_type) is not int or user_type not in (0, 1, 2)
+    ):
+        raise ValueError("user_type must be 0, 1, 2, or None.")
+
     with open(USERS_DIR, 'r', encoding='utf-8') as f:
         users = json.load(f)
 
@@ -20,10 +25,12 @@ def get_users() -> List[Dict[str, Any]]:
             or not isinstance(user.get('alias'), list)
             or any(not isinstance(alias, str) for alias in user.get('alias', []))
             or type(user.get('user_type')) is not int
-            or user['user_type'] not in (0, 1)
+            or user['user_type'] not in (0, 1, 2)
         ):
             raise ValueError(f"Invalid user record in {USERS_DIR}: {user!r}")
-    return users
+    if user_type is None:
+        return users
+    return [user for user in users if user['user_type'] == user_type]
 
 
 def find_user_name(alias: str, users: Optional[List[Dict[str, Any]]] = None) -> Optional[str]:

@@ -1,7 +1,10 @@
 import os
 import logging
 import tempfile
+import calendar
+import html
 from typing import List, Dict, Any
+from datetime import datetime
 from urllib.parse import urlparse
 
 # Third-party imports
@@ -402,30 +405,66 @@ class ReceiptBot:
             )  
     async def products_sumup(self, update: Update):
         try:
-            items = {}
-            messsage = '📈 *Resumo das Últimas Compras:*\n\n'
-            total = 0
-            for pdt in self.db.get_all_products():
-                date = pdt.date.strftime("%d/%m")
-                owner = pdt.owner
-                if not date in items: items[date] = {}
-                if not owner in items[date]: items[date][owner] = 0
-                items[date][owner] += pdt.price
-                total += pdt.price
+            now = datetime.now()
+            period_start = datetime(now.year, now.month, 1)
+            period_end = datetime(
+                now.year,
+                now.month,
+                calendar.monthrange(now.year, now.month)[1],
+                23, 59, 59, 999999,
+            )
+            products = sorted(
+                (
+                    product for product in self.db.get_all_products()
+                    if period_start <= product.date <= period_end
+                ),
+                key=lambda product: (product.date, str(product.product_name).casefold()),
+            )
 
-            for date,owners in items.items():
-                messsage += f'\[{date}]\n'
-                for o,v in owners.items():
-                    messsage += f'{o}: R$ {v:.2f}\n'
-                messsage += '\n'
+            month_name = (
+                "janeiro", "fevereiro", "março", "abril", "maio", "junho",
+                "julho", "agosto", "setembro", "outubro", "novembro", "dezembro",
+            )[now.month - 1].capitalize()
+            lines = [f"<b>Compras de {month_name}/{now.year}</b>"]
+            total = sum(product.price for product in products)
 
-            if total > 0:
-                messsage += f"\n*Total*: R$ {total:.2f}"
+            if products:
+                for product in products:
+                    lines.extend([
+                        "",
+                        f"<b>{html.escape(str(product.product_name))}</b>",
+                        f"Data: {product.date.strftime('%d/%m/%Y %H:%M')}",
+                        f"Responsável: {html.escape(str(product.owner))}",
+                        #f"Quantidade: {product.quantity:g} {html.escape(str(product.unity))}",
+                        f"Valor: R$ {product.price:.2f}",
+                        #f"Código: {html.escape(str(product.code))}",
+                        f"Loja: {html.escape(str(product.shop))}",
+                        #f"Chave de acesso: {html.escape(str(product.access_key or '—'))}",
+                    ])
+                lines.extend(["", f"<b>Total: R$ {total:.2f}</b>"])
+            else:
+                lines.append("Nenhum produto encontrado neste mês.")
 
-            await update.message.reply_text(messsage, parse_mode='Markdown')
+            for message in self._split_summary_messages(lines):
+                await update.effective_message.reply_text(message)
 
         except Exception as e:
             logger.error(f"Error during the products sumup file: {e}")
-            await update.message.reply_text(
+            await update.effective_message.reply_text(
                 "❌ Ocorreu um erro ao preparar resumo das compras."
             )
+
+    @staticmethod
+    def _split_summary_messages(lines: List[str], limit: int = 3800) -> List[str]:
+        messages = []
+        current = ""
+        for line in lines:
+            candidate = f"{current}\n{line}" if current else line
+            if len(candidate) > limit and current:
+                messages.append(current)
+                current = line
+            else:
+                current = candidate
+        if current:
+            messages.append(current)
+        return messages

@@ -13,7 +13,7 @@ from telegram.ext import (
 )
 from src.exceptions import DuplicatedValue
 from src.config import get_permitted_users, set_permitted_user
-from handler.bill import BillReceiptBot, MonthClosingNotFound
+from handler.bill import BillReceiptBot
 from handler.receipt import ReceiptBot
 
 #https://core.telegram.org/bots/api#formatting-options
@@ -50,6 +50,7 @@ class AP701Bot:
             CommandHandler("dcompras", self._safe_handler(self.download_products)),
             CommandHandler("drecibos", self._safe_handler(self.download_receipts)),
             CommandHandler("resumocompras", self._safe_handler(self.products_sumup)),
+            CommandHandler("resumocontas", self._safe_handler(self.accounts_summary)),
             CommandHandler("bills", self._safe_handler(self.monthly_bills)),
             CommandHandler("fechamento", self._safe_handler(self.monthly_closing)),
             CommandHandler("add", self._safe_handler(self.add_user)),
@@ -141,32 +142,50 @@ class AP701Bot:
     #@restricted
     async def monthly_bills(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         try:
-            messages = self.bill.monthly_summary()
-        except MonthClosingNotFound as error:
-            await update.effective_message.reply_text(str(error))
+            if not context.args:
+                messages = self.bill.monthly_summary()
+            elif len(context.args) == 1:
+                month_text, year_text = context.args[0].split("/")
+                if len(month_text) != 2 or len(year_text) != 4:
+                    raise ValueError("Informe mês e ano no formato MM/AAAA.")
+                messages = self.bill.monthly_summary(
+                    int(month_text), int(year_text)
+                )
+            else:
+                raise ValueError("Informe apenas um argumento no formato MM/AAAA.")
+        except ValueError as error:
+            await update.effective_message.reply_text(
+                f"Mês/ano inválido: {error}\n"
+                "Uso: /bills [MM/AAAA] (exemplo: /bills 11/2026)"
+            )
             return
 
         for message in messages:
             await update.effective_message.reply_text(message)
 
-    async def monthly_closing(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
-        if len(context.args) != 1:
-            await update.effective_message.reply_text(
-                "Uso: /fechamento MM/AAAA (por exemplo, /fechamento 11/2026)"
-            )
-            return
+    async def accounts_summary(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
+        messages = self.bill.accounts_summary()
+        for message in messages:
+            await update.effective_message.reply_text(message)
 
+    async def monthly_closing(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         try:
-            month_text, year_text = context.args[0].split("/")
-            if len(month_text) != 2 or len(year_text) != 4:
-                raise ValueError("Informe o mês e o ano no formato MM/AAAA.")
-            reference_month = int(month_text)
-            reference_year = int(year_text)
+            if not context.args:
+                today = datetime.now()
+                reference_month, reference_year = today.month, today.year
+            elif len(context.args) == 1:
+                month_text, year_text = context.args[0].split("/")
+                if len(month_text) != 2 or len(year_text) != 4:
+                    raise ValueError("Informe o mês e o ano no formato MM/AAAA.")
+                reference_month = int(month_text)
+                reference_year = int(year_text)
+            else:
+                raise ValueError("Informe apenas um argumento no formato MM/AAAA.")
             messages = self.bill.close_month(reference_month, reference_year)
         except ValueError as error:
             await update.effective_message.reply_text(
                 f"Mês/ano inválido: {error}\n"
-                "Uso: /fechamento MM/AAAA (por exemplo, /fechamento 11/2026)"
+                "Uso: /fechamento [MM/AAAA] (por exemplo, /fechamento 11/2026)"
             )
             return
 
@@ -264,7 +283,7 @@ class AP701Bot:
         🏳‍🌈 *Bot do 701* 🏢
                        
         *Comandos:*
-        /qr ou foto enviada: 
+        /qr ou foto: 
             Extrairei as compras feitas pelo QRCode\.
         
         /dcompras:
@@ -274,13 +293,16 @@ class AP701Bot:
             Retorna um _\.csv_ contendo todos as transferências realizadas no mês por todos os moradores\.
         
         /resumocompras:
-            Lista um resumo das ultimas compras feitas, contendo *Data*, *Autor* e *Valor Total*\.
+            Lista todos os produtos do mês corrente e suas características\.
 
-        /bills:
-            Lista os produtos incluídos desde o último fechamento, agrupados por responsável, e os PIX\.
+        /resumocontas:
+            Lista as contas zeradas e as transações PIX do mês corrente\.
 
-        /fechamento MM/AAAA:
-            Calcula o mês informado usando a data das compras e dos PIX; se já existir, recalcula\.
+        /bills [MM\/AAAA]:
+            Lista os produtos e PIX do mês informado; sem mês/ano, usa o mês atual\.
+
+        /fechamento [MM\/AAAA]:
+            Calcula o mês informado \(ou o mês atual\) usando a data das compras e dos PIX; se já existir, recalcula\.
             
         """
         await update.message.reply_text(help_text, parse_mode='MarkdownV2')
