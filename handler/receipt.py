@@ -389,7 +389,7 @@ class ReceiptBot:
         try:
             with open(TRANSFERS_DIR, 'rb') as file:
                 await update.message.reply_document(
-                    document=file,
+                    document=file,  
                     reply_markup=reply_markup,
                     filename="recibos.csv",
                     caption=f"Aqui está o arquivo! Gostaria de limpá-lo?"

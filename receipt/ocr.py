@@ -1,9 +1,12 @@
 from PIL import Image
 import pytesseract
-import re
 from pathlib import Path
 import os
+import logging
 from receipt.pix import InterPix, NuPix, Pix
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 # If you're on Windows, you might need to specify the tesseract path:
 if os.name == 'nt':
@@ -21,8 +24,9 @@ class TesseractOCR:
         # Use Tesseract to do OCR on the image
         text = pytesseract.image_to_string(img, lang='por')
         if save_raw:
-            filename = str(image_path).replace('jpeg','txt')
-            output_dir = Path("donwloads")
+            filename = str(image_path).split('\\')[-1] + '.txt'
+            logger.info(f"Saving file... {filename}")
+            output_dir = Path("downloads")
             html_path = output_dir / filename
             html_path.write_text(
                 text,
