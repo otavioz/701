@@ -31,10 +31,6 @@ class AP701Bot:
 
         self.application = Application.builder().token(self.token).defaults(defaults).build()
                 
-        # User sessions
-        self.user_sessions = {}
-        self.session_timeout = 3600
-        
         # Setup handlers
         self._setup_handlers()
         self.receipt = ReceiptBot()
@@ -78,7 +74,6 @@ class AP701Bot:
             try:
                 user_id = update.effective_user.id
                 permitted_users = get_permitted_users()
-                #self._clean_expired_sessions()
                 if user_id not in permitted_users:
                     self.logger.warning("Unauthorized access denied for {}.".format(user_id))
                     return await update.message.reply_text("Usuário \<{}> não autorizado!".format(user_id), parse_mode='Markdown')

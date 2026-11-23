@@ -9,6 +9,7 @@ from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 
 from consts import PRODUCT_DIR, TRANSFERS_DIR, DATABASE
 from src.database import DatabaseManager
+from src.user_session import UserSessionManager
 from receipt.ocr import TesseractOCR
 from receipt.pix import Pix
 from receipt.product import Product
@@ -25,7 +26,7 @@ class ReceiptBot:
     """Main Telegram bot for receipt processing"""
 
     def __init__(self):
-        self.user_sessions = {}
+        self.user_sessions = UserSessionManager()
         self.db = DatabaseManager(DATABASE)
 
     async def read_image(self,update): #,temp_path):
@@ -40,13 +41,12 @@ class ReceiptBot:
         qr_codes = QRCodeProcessor.detect_qr_codes(temp_path)
         
         user_id = update.message.from_user.id
-        if user_id not in self.user_sessions:
-            self.user_sessions[user_id] = {
-                'items': None,
-                'selected_items': [],
-                'pix': None,
-                'temp_path': temp_path
-            }
+        self.user_sessions.get_or_create(user_id, {
+            'items': None,
+            'selected_items': [],
+            'pix': None,
+            'temp_path': temp_path
+        })
             
         if qr_codes:
             await self.read_receipt(update,qr_codes)
@@ -96,7 +96,7 @@ class ReceiptBot:
             f'Para: {receipt.to_}\n'
             f'Realizado em: {receipt.date_.strftime("%d/%m/%Y %H:%M:%S")}')
         
-        self.user_sessions[user_id]['text'] = message_text
+        self.user_sessions.update(user_id, text=message_text)
         # Add action buttons
         keyboard = [[
             #InlineKeyboardButton("📝 Finalizar", callback_data="save_pix"),
@@ -107,7 +107,7 @@ class ReceiptBot:
 
         #Save PIX
         receipt.doc_id = self.db.create_pix(receipt)
-        self.user_sessions[user_id]['pix'] = receipt
+        self.user_sessions.update(user_id, pix=receipt)
 
         #os.unlink(temp_path)
         await update.message.reply_text(message_text,
@@ -159,10 +159,10 @@ class ReceiptBot:
             return
         
         # Store items in user session
-        self.user_sessions[user_id] = {
+        self.user_sessions.set(user_id, {
             'items': items,
             'selected_items': []
-        }
+        })
 
         # Send items for selection
         await self.send_item_selection(update, user_id, items)
@@ -170,11 +170,12 @@ class ReceiptBot:
     async def select_items(self, update: Update, user_id: int, data):
         query = update.callback_query
 
-        if user_id not in self.user_sessions: # self.user_sessions is not global
+        session = self.user_sessions.get(user_id)
+        if session is None:
             await query.edit_message_text("Sessão expirada, inicie novamente.")
             return
         
-        items = self.user_sessions[user_id]['items']
+        items = session['items']
         
         if data.startswith("select_"):
             # Select item
@@ -196,25 +197,28 @@ class ReceiptBot:
         
         elif data == "cancel_":
             # Cancel operation
-            if user_id in self.user_sessions:
-                del self.user_sessions[user_id]
+            self.user_sessions.remove(user_id)
             await query.edit_message_text("Operação cancelada.")
         
         elif data == "save_pix":
             # Save transaction on file
-            pix = self.user_sessions[user_id]['pix']
-            text = self.user_sessions[user_id]['text']
-            if user_id in self.user_sessions:
-                del self.user_sessions[user_id]
+            pix = session.get('pix')
+            text = session.get('text')
+            if pix is None or text is None:
+                await query.edit_message_text("Sessão expirada, inicie novamente.")
+                return
+            self.user_sessions.remove(user_id)
             #pix.save()
             self.db.create_pix(pix)
             await query.edit_message_text(f'Transação salva!\n{text}',parse_mode='Markdown')
 
         elif data == "adjust_pix":
             # Save with exceptions
-            pix = self.user_sessions[user_id]['pix']
-            if user_id in self.user_sessions:
-                del self.user_sessions[user_id]
+            pix = session.get('pix')
+            if pix is None:
+                await query.edit_message_text("Sessão expirada, inicie novamente.")
+                return
+            self.user_sessions.remove(user_id)
             pix.correction()
             self.db.update_pix_object(pix.doc_id,pix)
             await query.edit_message_text("Feito! Operação foi marcada para revisão manual.")
@@ -222,9 +226,6 @@ class ReceiptBot:
 
     async def clean_file(self, update: Update, user_id: int, data):
         query = update.callback_query
-
-        #if user_id not in self.user_sessions: # self.user_sessions is not global
-        #    return await query.edit_message_text("Sessão expirada, inicie novamente.")
 
         if data == "clean_file_2":
             Pix.backup_file()
@@ -234,8 +235,9 @@ class ReceiptBot:
             await query.edit_message_caption("Arquivo limpo.")
         elif data == 'save_backup':
             #Product.backup_file() #TODO MEIORA ISSO
-            if user_id in self.user_sessions and 'temp_path' in self.user_sessions[user_id]:
-                temp_path = self.user_sessions[user_id]['temp_path']
+            session = self.user_sessions.get(user_id)
+            if session is not None and 'temp_path' in session:
+                temp_path = session['temp_path']
                 if 'temp_path' in locals() and os.path.exists(temp_path):
                     save_img_bkp(temp_path,user_id)
                     os.unlink(temp_path)
@@ -244,8 +246,7 @@ class ReceiptBot:
             return await query.edit_message_caption("Sessão expirada, inicie novamente.")
         elif data == "keep_":
             # Cancel operation
-            if user_id in self.user_sessions:
-                del self.user_sessions[user_id]
+            self.user_sessions.remove(user_id)
             await query.edit_message_caption("Feito!")
     
         
@@ -346,9 +347,7 @@ class ReceiptBot:
             # Cleanup
             #os.unlink(temp_path)
             
-            # Clear user session
-            if user_id in self.user_sessions:
-                del self.user_sessions[user_id]
+            self.user_sessions.remove(user_id)
             
             await update.callback_query.edit_message_text(txt_content, parse_mode='Markdown')
             
